@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}{% endblock title%}</title>
+</head>
+
+<body>
+    <p>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="/">HOME</a>
+        <span>|</span>
+        {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit"
+                style="background:none; border:none; padding:0; text-decoration:underline; cursor:pointer; color:blue;">
+                LOGOUT
+            </button>
+        </form>
+        {% else %}
+        <a href="/auth/login/">LOGIN</a> |
+        <a href="/auth/register/">REGISTER</a>
+        {% endif %}
+    </div>
+
+    </p>
+    {% block content %}
+    {% endblock content %}
+</body>
+
+</html>
