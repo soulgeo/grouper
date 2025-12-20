@@ -5,3 +5,5 @@ django-stubs
 django-stubs-ext
 mypy-extensions
 typing_extensions
+requests
+jwt
