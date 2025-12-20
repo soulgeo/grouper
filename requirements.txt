@@ -7,3 +7,5 @@ mypy-extensions
 typing_extensions
 requests
 jwt
+psycopg[binary]
+python-dotenv
