@@ -14,6 +14,8 @@ services:
       - .env
   db:
     image: postgres:17
+    ports:
+      - "5432:5432"
     container_name: grouper_db
     volumes:
       - postgres_db:/var/lib/postgresql/data/

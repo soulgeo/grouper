@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_countries',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -68,7 +69,11 @@ ROOT_URLCONF = 'grouper.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'users' / 'templates',
+            BASE_DIR / 'core' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,9 +127,13 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Django allauth config
 SITE_ID = 1
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
-ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}
+ACCOUNT_SIGNUP_FORM_CLASS = 'users.forms.SignupForm'
+
+LOGIN_REDIRECT_URL = 'secret'
 
 
 # Password validation

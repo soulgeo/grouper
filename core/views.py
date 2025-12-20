@@ -3,9 +3,9 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render(request, "index.html")
+    return render(request, 'index.html')
 
 
 @login_required
 def secret(request):
-    return render(request, "secret.html")
+    return render(request, 'secret.html')

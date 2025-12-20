@@ -3,6 +3,7 @@ django-allauth
 python-dotenv
 django-stubs
 django-stubs-ext
+django-countries
 mypy-extensions
 typing_extensions
 requests
