@@ -7,5 +7,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/signup/', CustomSignupView.as_view(), name='account_signup'),
     path('accounts/', include('allauth.urls')),
+    path('_nested_admin/', include('nested_admin.urls')),
     path('', include('core.urls')),
 ]
