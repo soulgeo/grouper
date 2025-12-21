@@ -4,6 +4,24 @@ from django.utils.translation import gettext_lazy as _
 from users.models import User
 
 
+class Contact(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='contacts'
+    )
+    contact = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='in_contacts_of'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Contact'
+        verbose_name_plural = 'Contacts'
+        unique_together = ('user', 'contact')
+
+    def __str__(self) -> str:
+        return f"{self.user.username} -> {self.contact.username}"
+
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
