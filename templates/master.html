@@ -11,16 +11,10 @@
         <a href="/">HOME</a>
         <span>|</span>
         {% if user.is_authenticated %}
-        <form action="{% url 'logout' %}" method="post" style="margin: 0;">
-            {% csrf_token %}
-            <button type="submit"
-                style="background:none; border:none; padding:0; text-decoration:underline; cursor:pointer; color:blue;">
-                LOGOUT
-            </button>
-        </form>
+        <a href="/accounts/logout/">SIGN OUT</a>
         {% else %}
-        <a href="/auth/login/">LOGIN</a> |
-        <a href="/auth/register/">REGISTER</a>
+        <a href="/accounts/login/">SIGN IN</a> |
+        <a href="/accounts/signup/">SIGN UP</a>
         {% endif %}
     </div>
 
