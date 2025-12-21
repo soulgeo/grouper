@@ -1,0 +1,13 @@
+{% extends "master.html" %}
+
+{% block title %}
+Contacts
+{% endblock title %}
+
+{% block content %}
+    <ul>
+        {% for contact in contacts %}
+            <li>{{ contact.contact.username }}</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
