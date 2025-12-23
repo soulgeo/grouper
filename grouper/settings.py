@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'django_countries',
     'allauth',
     'allauth.account',
@@ -134,7 +135,7 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_LOGIN_METHODS = {'email', 'username'}
 ACCOUNT_SIGNUP_FORM_CLASS = 'users.forms.SignupForm'
 
-LOGIN_REDIRECT_URL = 'secret'
+LOGIN_REDIRECT_URL = '/'
 
 
 # Password validation
