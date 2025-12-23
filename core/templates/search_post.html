@@ -11,7 +11,10 @@ Results for: {{ query }}
 {% else %}
 <ul>
     {% for post in results %}
-    <li>{{ post }}</li>
+    <li>
+        <h4>{{ post }}</h4>
+        <p>{{ post.content.text }}</p>
+    </li>
     {% endfor %}
 </ul>
 {% endif %}
