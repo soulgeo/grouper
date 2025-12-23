@@ -5,9 +5,24 @@ Home
 {% endblock title %}
 
 {% block content %}
-<form method="GET" action="/search/">
-    <input type="text" name="query" value="">
-    <button type="submit">Search</button>
-</form>
-<p>Hello!</p>
+<div>
+    <form method="GET" action="/search/">
+        <input type="text" name="query" value="">
+        <button type="submit">Search</button>
+    </form>
+</div>
+<br>
+<div>
+    {% if user.is_authenticated %}
+    <h4>Share something...</h4>
+    <form method="POST" action="/posts/create/">
+        {% csrf_token %}
+        {{ post_form }}
+        {{ post_content_form }}
+        <button type="submit">Create Post</button>
+    </form>
+    {% else %}
+    <p>Sign in to create posts.</p>
+    {% endif %}
+</div>
 {% endblock content %}
