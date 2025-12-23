@@ -1,9 +1,13 @@
 {% extends "master.html" %}
 
 {% block title %}
-    Home
+Home
 {% endblock title %}
 
 {% block content %}
-    <p>Hello!</p>
+<form method="GET" action="/search/">
+    <input type="text" name="query" value="">
+    <button type="submit">Search</button>
+</form>
+<p>Hello!</p>
 {% endblock content %}

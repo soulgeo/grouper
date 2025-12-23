@@ -1,0 +1,18 @@
+{% extends "master.html" %}
+
+{% block title %}
+Results for: {{ query }}
+{% endblock title %}
+
+{% block content %}
+<h2>Results for: {{ query }}</h2>
+{% if not results %}
+<p>No results.</p>
+{% else %}
+<ul>
+    {% for post in results %}
+    <li>{{ post }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock content %}
