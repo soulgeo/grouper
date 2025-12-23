@@ -11,6 +11,7 @@
         <a href="/">HOME</a>
         <span>|</span>
         {% if user.is_authenticated %}
+        <a href="/accounts/">ACCOUNT</a> |
         <a href="/accounts/logout/">SIGN OUT</a>
         {% else %}
         <a href="/accounts/login/">SIGN IN</a> |
