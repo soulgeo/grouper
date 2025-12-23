@@ -29,8 +29,10 @@ def search_post(request):
         visibility_filter |= Q(user=request.user)
         visibility_filter |= Q(user__in_contacts_of__user=request.user)
 
-    results = Post.objects.filter(title__unaccent__icontains=query).filter(
-        visibility_filter
+    results = (
+        Post.objects.filter(title__unaccent__icontains=query)
+        .filter(visibility_filter)
+        .order_by('-created_at')
     )
     context = {"query": query, "results": results}
     template = 'search_post.html'
