@@ -4,6 +4,7 @@ python-dotenv
 django-stubs
 django-stubs-ext
 django-countries
+django-widget-tweaks
 mypy-extensions
 typing_extensions
 requests

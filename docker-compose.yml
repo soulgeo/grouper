@@ -15,8 +15,10 @@ services:
   tailwind:
     build: .
     command: npm run tailwind-watch
+    tty: true
     volumes:
       - .:/app
+      - /app/node_modules
   db:
     image: postgres:17
     ports:
