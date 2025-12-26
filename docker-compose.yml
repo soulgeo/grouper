@@ -12,6 +12,11 @@ services:
         restart: true
     env_file:
       - .env
+  tailwind:
+    build: .
+    command: npm run tailwind-watch
+    volumes:
+      - .:/app
   db:
     image: postgres:17
     ports:

@@ -5,12 +5,19 @@ PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN apt-get update
+RUN apt-get update && apt-get install -y \
+    nodejs \
+    npm
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
+COPY package.json package-lock.json ./
+RUN npm install
+
 COPY . .
+
+RUN npm run tailwind-build
 
 EXPOSE 8000
 

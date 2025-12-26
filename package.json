@@ -1,0 +1,29 @@
+{
+  "name": "grouper",
+  "version": "1.0.0",
+  "description": "1.  **Set up environment variables:**     Copy the example environment file to create your local configuration:",
+  "main": "index.js",
+  "devDependencies": {
+    "autoprefixer": "^10.4.23",
+    "daisyui": "^4.12.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind-watch": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch",
+    "tailwind-build": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soulgeo/grouper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/soulgeo/grouper/issues"
+  },
+  "homepage": "https://github.com/soulgeo/grouper#readme"
+}
