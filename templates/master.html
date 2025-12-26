@@ -8,22 +8,13 @@
 </head>
 
 <body>
-    <p>
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <a href="/">HOME</a>
-        <span>|</span>
-        {% if user.is_authenticated %}
-        <a href="/accounts/">ACCOUNT</a> |
-        <a href="/accounts/logout/">SIGN OUT</a>
-        {% else %}
-        <a href="/accounts/login/">SIGN IN</a> |
-        <a href="/accounts/signup/">SIGN UP</a>
-        {% endif %}
+    <div class="mr-[28rem] ml-[28rem]">
+        {% include "navbar.html" %}
     </div>
-
-    </p>
-    {% block content %}
-    {% endblock content %}
+    <div class="mr-[28rem] ml-[28rem] mt-8 mb-8">
+        {% block content %}
+        {% endblock content %}
+    </div>
 </body>
 
 </html>
