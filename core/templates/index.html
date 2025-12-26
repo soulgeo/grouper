@@ -1,26 +1,26 @@
 {% extends "master.html" %}
+{% load widget_tweaks %}
 
 {% block title %}
 Home
 {% endblock title %}
 
 {% block content %}
-<div>
-    <form method="GET" action="/search/">
-        <input type="text" name="query" value="">
-        <button type="submit">Search</button>
-    </form>
-</div>
-<br>
-<div>
+<div class="flex flex-col gap-4">
     {% if user.is_authenticated %}
-    <h4>Share something...</h4>
-    <form method="POST" action="/posts/create/">
+    <h4 class="font-bold text-lg" >Share something...</h4>
+    <div>
+    <form method="POST" action="{% url 'create_post' %}">
         {% csrf_token %}
-        {{ post_form }}
-        {{ post_content_form }}
-        <button type="submit">Create Post</button>
+        <div class="form-control">
+            <label>Title</label>
+            {% render_field post_form.title class="input input-bordered" %}
+            <label>Content</label>
+            {% render_field post_content_form.text class="textarea textarea-bordered h-48" %}
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Create Post</button>
     </form>
+    </div>
     {% else %}
     <p>Sign in to create posts.</p>
     {% endif %}
