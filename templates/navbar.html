@@ -1,17 +1,17 @@
 <nav>
 <div class="navbar bg-base-100 shadow-sm">
     <div class="flex-1 text-lg">
-        <a class="btn btn-ghost" href="{% url 'home' %}">HOME</a>
+        <a class="btn btn-ghost mr-2" href="{% url 'home' %}">HOME</a>
         <form method="get" action="{% url 'search' %}">
             <input type="text" name="query" value="" placeholder="Search posts..." class="input input-bordered w-24 md:w-auto bg-slate-800" />
         </form>
     </div>
     <div class="flex-none text-lg">
         {% if user.is_authenticated %}
-        <a class="btn btn-ghost" href="{% url 'account_email' %}">ACCOUNT</a>
+        <a class="btn btn-ghost mr-2" href="{% url 'account_email' %}">ACCOUNT</a>
         <a class="btn btn-ghost" href="{% url 'account_logout' %}">SIGN OUT</a>
         {% else %}
-        <a class="btn btn-ghost" href="{% url 'account_login' %}">SIGN IN</a>
+        <a class="btn btn-ghost mr-2" href="{% url 'account_login' %}">SIGN IN</a>
         <a class="btn btn-ghost" href="{% url 'account_signup' %}">SIGN UP</a>
         {% endif %}
     </div>
