@@ -5,13 +5,26 @@ Contacts
 {% endblock title %}
 
 {% block main %}
+<div class="overflow-x-auto">
 {% if not contacts %}
 <p>You haven't made any contacts yet.</p>
 {% else %}
-<ul>
+<table class="table table-zebra table-lg">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Friends since</th>
+        </tr>
+    </thead>
+    <tbody>
     {% for contact in contacts %}
-    <li>{{ contact.contact.username }}</li>
+        <tr>
+            <td>{{ contact.contact.username }}</td>
+            <td>{{ contact.created_at }}</td>
+        </tr>
     {% endfor %}
-</ul>
+    </tbody>
+</table>
 {% endif %}
+</div>
 {% endblock main %}
