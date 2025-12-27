@@ -1,0 +1,16 @@
+{% extends "master_auth.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% if block.super %}{{ block.super }}{% else %}{% block head_title %}{% endblock head_title %}{% endif %}
+{% endblock title %}
+
+{% block main %}
+    <div class="flex items-center justify-center">
+        <div class="card w-96 bg-base-200 shadow-xl">
+            <div class="card-body">
+                {% block content %}{% endblock content %}
+            </div>
+        </div>
+    </div>
+{% endblock main %}

@@ -7,25 +7,22 @@
     {% element h1 %}
         {% trans "Sign Up" %}
     {% endelement %}
-    {% element p %}
-        {{ custom_message }}
-    {% endelement %}
     {% setvar link %}
-        <a href="{{ login_url }}">
+        <a class="text-blue-500 hover:underline" href="{{ login_url }}">
         {% endsetvar %}
         {% setvar end_link %}
         </a>
     {% endsetvar %}
     {% element p %}
         {% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
-    {% endelement %}
+    {% endelement %}sign
     {% if not SOCIALACCOUNT_ONLY %}
         {% url 'account_signup' as action_url %}
         {% element form form=form method="post" action=action_url tags="entrance,signup" %}
             {% slot body %}
                 {% csrf_token %}
-                {% element fields form=form unlabeled=True %}
-                {% endelement %}
+                {% load widget_tweaks %}
+                {% include "allauth/elements/fields.html" with form=form %}
                 {{ redirect_field }}
             {% endslot %}
             {% slot actions %}
@@ -38,7 +35,7 @@
     {% if PASSKEY_SIGNUP_ENABLED %}
         {% element hr %}
         {% endelement %}
-        {% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
+        {% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary,text-blue-500 hover:text-blue-700" %}
             {% trans "Sign up using a passkey" %}
         {% endelement %}
     {% endif %}

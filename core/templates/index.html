@@ -5,7 +5,7 @@
 Home
 {% endblock title %}
 
-{% block content %}
+{% block main %}
 <div class="flex flex-col gap-4">
     {% if user.is_authenticated %}
     <h4 class="font-bold text-lg" >Share something...</h4>
@@ -25,4 +25,4 @@ Home
     <p>Sign in to create posts.</p>
     {% endif %}
 </div>
-{% endblock content %}
+{% endblock main %}

@@ -47,12 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django_countries',
     'widget_tweaks',
+    'users',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'nested_admin',
-    'users',
     'core',
 ]
 
