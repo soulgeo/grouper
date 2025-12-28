@@ -1,14 +1,36 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
+
+from users.models import UserProfile
 
 from .forms import PostContentForm, PostForm
 from .models import Contact, Post
 
 
 def index(request):
-    context = {"post_form": PostForm(), "post_content_form": PostContentForm()}
+    visibility_filter = Q(visibility=Post.Visibility.PUBLIC)
+
+    if request.user.is_authenticated:
+        visibility_filter |= Q(user=request.user)
+        visibility_filter |= Q(user__in_contacts_of__user=request.user)
+
+    posts = Post.objects.filter(visibility_filter).order_by('-created_at')
+    context = {
+        "post_form": PostForm(),
+        "post_content_form": PostContentForm(),
+        "posts": posts,
+    }
     template = 'index.html'
+    return render(request, template, context)
+
+
+def profile(request, username):
+    profile = get_object_or_404(
+        UserProfile.objects.select_related('user'), user__username=username
+    )
+    context = {"profile": profile}
+    template = 'profile.html'
     return render(request, template, context)
 
 

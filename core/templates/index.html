@@ -8,18 +8,48 @@ Home
 {% block main %}
 <div class="flex flex-col gap-4">
     {% if user.is_authenticated %}
-    <h4 class="font-bold text-lg" >Share something...</h4>
-    <div>
-    <form method="POST" action="{% url 'create_post' %}">
-        {% csrf_token %}
-        <div class="form-control">
-            <label>Title</label>
-            {% render_field post_form.title class="input input-bordered" %}
-            <label>Content</label>
-            {% render_field post_content_form.text class="textarea textarea-bordered h-48" %}
+    <div class="flex gap-4">
+        <div class="avatar flex-none" name="profile-pic">
+            <div class="w-16 h-16 rounded-full overflow-hidden">
+                <img class="w-full h-full object-cover" src="{{ user.profile.image_url }}" alt="{{ user.username }}">
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-4">Create Post</button>
-    </form>
+        <div class="flex-1">
+            <form method="POST" action="{% url 'create_post' %}">
+                {% csrf_token %}
+                <div class="flex gap-4 form-control">
+                    <div class="font-bold form-control w-full">
+                        {% render_field post_form.title placeholder="Title..." class="input input-bordered"%}
+                    </div>
+                    {% render_field post_content_form.text placeholder="Share something..." class="textarea textarea-bordered h-32" %}
+                    {% render_field post_form.visibility class="select select-bordered w-32 max-w-xs" %}
+                </div>
+                <button type="submit" class="btn btn-primary mt-4">Create Post</button>
+            </form>
+        </div>
+    </div>
+    <div class="flex-col">
+        {% for post in posts %}
+        <div class="divider"></div>
+        <div class="flex gap-4">
+            <div class="avatar flex-none" name="profile-pic">
+                <div class="w-16 h-16 rounded-full overflow-hidden">
+                    <img class="w-full h-full object-cover" src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}">
+                </div>
+            </div >
+            <div class="flex-1" name="post">
+                <div class="stat-title text-sm">
+                    {{ post.user.first_name}} {{post.user.last_name}} · {{ post.created_at }}
+                </div>
+                <div class="font-bold text-lg">
+                    {{ post.title }}
+                </div>
+                <div>
+                    {{ post.content.text }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
     {% else %}
     <p>Sign in to create posts.</p>

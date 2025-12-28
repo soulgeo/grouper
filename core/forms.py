@@ -6,7 +6,7 @@ from core.models import Post, PostContent
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ["title"]
+        fields = ["title", "visibility"]
 
 
 class PostContentForm(ModelForm):
