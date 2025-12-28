@@ -2,7 +2,7 @@ from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 
-from .models import UserProfile
+from .models import User, UserProfile
 
 
 class SignupForm(forms.Form):
@@ -25,3 +25,15 @@ class SignupForm(forms.Form):
         profile = UserProfile(user=user)
         profile.country = self.cleaned_data.get('country', '')
         profile.save()
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name"]
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ["image", "country", "bio", "birth_date"]

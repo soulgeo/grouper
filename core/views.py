@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
+from users.forms import UserForm, UserProfileForm
 from users.models import UserProfile
 
 from .forms import PostContentForm, PostForm
@@ -31,6 +32,27 @@ def profile(request, username):
     )
     context = {"profile": profile}
     template = 'profile.html'
+    return render(request, template, context)
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    profile = get_object_or_404(UserProfile, user=user)
+
+    if request.method == "POST":
+        user_form = UserForm(request.POST, instance=user)
+        user_profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if user_form.is_valid() and user_profile_form.is_valid():
+            user_form.save()
+            user_profile_form.save()
+            return redirect("profile", username=user.username)
+    else:
+        user_form = UserForm(instance=user)
+        user_profile_form = UserProfileForm(instance=profile)
+
+    context = {"user_form": user_form, "user_profile_form": user_profile_form}
+    template = 'edit_profile.html'
     return render(request, template, context)
 
 
@@ -83,5 +105,4 @@ def create_post(request):
         else:
             print("Form errors:", post_form.errors, post_content_form.errors)
             return redirect("/")  # Or render a template with errors
-    else:
-        return redirect("/accounts/")
+    return redirect("/accounts/")

@@ -1,0 +1,27 @@
+{% extends "master.html" %}
+{% load widget_tweaks %}
+{% load partials %}
+
+{% block title %}
+Edit Profile: {{ user.username }}
+{% endblock title %}
+
+{% block main %}
+<div class="font-bold text-3xl">
+    <h1>Edit profile</h1>
+</div>
+<div class="divider"></div>
+<div class="flex-1">
+    <form method="post" action="{% url 'edit_profile' %}">
+        {% csrf_token %}
+        <div class="flex gap-4 form-control">
+            {% render_field user_profile_form.image %}
+            {% render_field user_form.first_name placeholder="First Name" class="input input-bordered"%}
+            {% render_field user_form.last_name placeholder="Last Name" class="input input-bordered"%}
+            {% render_field user_profile_form.bio placeholder="A few things about yourself..." class="textarea textarea-bordered h-32" %}
+            {% render_field post_form.visibility class="select select-bordered w-32 max-w-xs" %}
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Save</button>
+    </form>
+</div>
+{% endblock main %}

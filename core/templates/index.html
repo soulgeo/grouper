@@ -10,13 +10,13 @@ Home
 <div class="flex flex-col gap-4">
     {% if user.is_authenticated %}
     <div class="flex gap-4">
-        <div class="avatar flex-none" name="profile-pic">
-            <div class="w-16 h-16 rounded-full overflow-hidden">
-                <img class="w-full h-full object-cover" src="{{ user.profile.image_url }}" alt="{{ user.username }}">
+        <div class="btn btn-ghost btn-circle avatar flex-none" name="profile-pic">
+            <div class="w-16 rounded-full overflow-hidden">
+                <a href="/p/{{ user.username }}"><img class="w-full h-full object-cover" src="{{ user.profile.image_url }}" alt="{{ user.username }}"></a>
             </div>
         </div>
         <div class="flex-1">
-            <form hx-post="{% url 'submit-post' %}" hx-target="#posts-body" hx-swap="beforebegin" hx-on::after-request="this.reset()">
+            <form hx-post="{% url 'submit-post' %}" hx-target="#posts-body" hx-swap="afterbegin" hx-on::after-request="this.reset()">
                 {% csrf_token %}
                 <div class="flex gap-4 form-control">
                     <div class="font-bold form-control w-full">
@@ -38,13 +38,13 @@ Home
         <div class="divider"></div>
         <div class="flex gap-4">
             <div class="avatar flex-none" name="profile-pic">
-                <div class="w-16 h-16 rounded-full overflow-hidden">
-                    <img class="w-full h-full object-cover" src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}">
+                <div class="btn btn-ghost btn-circle w-12 h-12">
+                    <a href="/p/{{ post.user.username }}"><img class="w-full h-full object-cover" src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}"></a>
                 </div>
             </div >
             <div class="flex-1" name="post">
                 <div class="stat-title text-sm">
-                    {{ post.user.first_name}} {{post.user.last_name}} · {{ post.created_at }}
+                    <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{post.user.last_name}} · {{ post.created_at }}</a>
                 </div>
                 <div class="font-bold text-lg">
                     {{ post.title }}
