@@ -12,3 +12,4 @@ jwt
 psycopg[binary]
 python-dotenv
 django-nested-admin
+Pillow
