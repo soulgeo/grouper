@@ -139,3 +139,4 @@ GitHub.sublime-settings
 .history
 node_modules/
 /static/css/output.css
+/static/src/htmx.min.js
