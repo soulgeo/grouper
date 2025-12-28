@@ -67,3 +67,14 @@ class Attachment(models.Model):
     class Meta:
         verbose_name = 'Attachment'
         verbose_name_plural = 'Attachments'
+
+
+class InterestCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Interest(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(
+        InterestCategory, on_delete=models.CASCADE, related_name="interests"
+    )
