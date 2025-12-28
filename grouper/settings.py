@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django_countries',
     'widget_tweaks',
+    'template_partials',
     'users',
     'allauth',
     'allauth.account',

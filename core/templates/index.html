@@ -1,5 +1,6 @@
 {% extends "master.html" %}
 {% load widget_tweaks %}
+{% load partials %}
 
 {% block title %}
 Home
@@ -15,7 +16,7 @@ Home
             </div>
         </div>
         <div class="flex-1">
-            <form method="POST" action="{% url 'create_post' %}">
+            <form hx-post="{% url 'submit-post' %}" hx-target="#posts-body" hx-swap="beforebegin" hx-on::after-request="this.reset()">
                 {% csrf_token %}
                 <div class="flex gap-4 form-control">
                     <div class="font-bold form-control w-full">
@@ -28,8 +29,12 @@ Home
             </form>
         </div>
     </div>
-    <div class="flex-col">
+    {% else %}
+    <p>Sign in to create posts.</p>
+    {% endif %}
+    <div class="flex-col" id="posts-body">
         {% for post in posts %}
+        {% partialdef post_partial inline=true %}
         <div class="divider"></div>
         <div class="flex gap-4">
             <div class="avatar flex-none" name="profile-pic">
@@ -49,10 +54,8 @@ Home
                 </div>
             </div>
         </div>
+        {% endpartialdef %}
         {% endfor %}
     </div>
-    {% else %}
-    <p>Sign in to create posts.</p>
-    {% endif %}
 </div>
 {% endblock main %}

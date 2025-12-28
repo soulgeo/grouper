@@ -68,11 +68,18 @@ def create_post(request):
         if post_form.is_valid() and post_content_form.is_valid():
             post_instance = post_form.save(commit=False)
             post_instance.user = request.user
+
             post_content_instance = post_content_form.save(commit=False)
             post_content_instance.post = post_instance
+
             post_instance.save()
             post_content_instance.save()
-            return redirect("/")
+
+            context = {
+                "post": post_instance,
+            }
+            partial = 'index.html#post_partial'
+            return render(request, partial, context)
         else:
             print("Form errors:", post_form.errors, post_content_form.errors)
             return redirect("/")  # Or render a template with errors

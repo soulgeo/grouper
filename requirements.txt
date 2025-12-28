@@ -5,6 +5,7 @@ django-stubs
 django-stubs-ext
 django-countries
 django-widget-tweaks
+django-template-partials
 mypy-extensions
 typing_extensions
 requests
