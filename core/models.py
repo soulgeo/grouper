@@ -1,15 +1,18 @@
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from users.models import User
 
 
 class Contact(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='contacts'
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='contacts',
     )
     contact = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='in_contacts_of'
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='in_contacts_of',
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -24,7 +27,7 @@ class Contact(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Visibility(models.TextChoices):
         PUBLIC = "Public", _("Public")
@@ -78,3 +81,6 @@ class Interest(models.Model):
     category = models.ForeignKey(
         InterestCategory, on_delete=models.CASCADE, related_name="interests"
     )
+
+    def __str__(self) -> str:
+        return self.name

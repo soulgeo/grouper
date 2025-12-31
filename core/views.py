@@ -37,9 +37,7 @@ def profile(request, username):
     )
     posts = filter_visible_posts(
         request,
-        Post.objects.filter(user__username=request.username).order_by(
-            '-created_at'
-        ),
+        Post.objects.filter(user__username=username).order_by('-created_at'),
     )
     context = {"profile": profile, "posts": posts}
     template = 'profile.html'

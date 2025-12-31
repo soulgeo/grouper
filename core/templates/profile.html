@@ -1,32 +1,63 @@
 {% extends "master.html" %}
+{% load partials %}
 
 {% block title %}
 {{ profile.user.username }}'s profile
 {% endblock title %}
 
 {% block main %}
-<div class="flex flex-col gap-4">
-    <div class="flex flex-row gap-4">
+<div class="flex flex-row gap-4">
+    <div class="flex flex-col gap-4 items-center max-w-72 min-w-72">
         <div class="avatar">
-            <div class="w-48 rounded">
+            <div class="w-32 rounded-full">
                 <img src="{{ profile.image_url }}" alt="{{ profile.user.username }}">
             </div>
         </div>
-        <div class="flex flex-col gap-4 w-full">
-            <div class="flex flex-row gap-4 justify-between">
-                <div class="font-bold text-4xl">
-                    <h2>{{ profile.user.first_name }} {{ profile.user.last_name }}</h2>
+        <div class="font-bold text-2xl text-center">
+            <h2>{{ profile.user.first_name }} {{ profile.user.last_name }}</h2>
+        </div>
+        {% if user == profile.user %}
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+            Edit profile
+        </a>
+        {% endif %}
+        <div class="text-md">
+            <p>{{profile.bio}}</p>
+        </div>
+        <div class="text-sm">
+            <h4>Interests:</h4>
+            {% for interest in profile.interests.all %}
+            <span class="mb-1 rounded-md inline-block bg-purple-500 text-neutral-950 px-1">
+            <a href="">○ {{ interest }} </a>
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="flex flex-col gap-4 w-full">
+        {% for post in posts %}
+        {% partialdef post_partial inline=true %}
+        <div class="divider"></div>
+        <div class="flex gap-4">
+            <div class="avatar flex-none" name="profile-pic">
+                <div class="btn btn-ghost btn-circle w-12 h-12">
+                    <a href="/p/{{ post.user.username }}"><img class="w-full h-full object-cover"
+                            src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}"></a>
                 </div>
-                {% if user == profile.user %}
-                <a href="{% url 'edit_profile' %}" class="btn btn-primary">
-                    Edit profile
-                </a>
-                {% endif %}
             </div>
-            <div class="text-md">
-                <p>{{profile.bio}}</p>
+            <div class="flex-1" name="post">
+                <div class="stat-title text-sm">
+                    <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{ post.user.last_name }} · {{ post.created_at }}</a>
+                </div>
+                <div class="font-bold text-lg">
+                    {{ post.title }}
+                </div>
+                <div>
+                    {{ post.content.text }}
+                </div>
             </div>
         </div>
+        {% endpartialdef post_partial %}
+        {% endfor %}
     </div>
 </div>
 {% endblock main %}

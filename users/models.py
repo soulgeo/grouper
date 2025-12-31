@@ -24,6 +24,7 @@ class UserProfile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     email_verified_at = models.DateTimeField(null=True, blank=True)
+    interests = models.ManyToManyField("core.Interest", related_name="interests")
 
     @property
     def image_url(self):
