@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404, redirect, render
 
 from users.forms import UserForm, UserProfileForm
@@ -9,14 +9,19 @@ from .forms import PostContentForm, PostForm
 from .models import Contact, Post
 
 
-def index(request):
+def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
     visibility_filter = Q(visibility=Post.Visibility.PUBLIC)
 
     if request.user.is_authenticated:
         visibility_filter |= Q(user=request.user)
         visibility_filter |= Q(user__in_contacts_of__user=request.user)
 
-    posts = Post.objects.filter(visibility_filter).order_by('-created_at')
+    return query_set.filter(visibility_filter)
+
+
+def index(request):
+    posts = filter_visible_posts(request, Post.objects.order_by('-created_at'))
+
     context = {
         "post_form": PostForm(),
         "post_content_form": PostContentForm(),
@@ -30,7 +35,13 @@ def profile(request, username):
     profile = get_object_or_404(
         UserProfile.objects.select_related('user'), user__username=username
     )
-    context = {"profile": profile}
+    posts = filter_visible_posts(
+        request,
+        Post.objects.filter(user__username=request.username).order_by(
+            '-created_at'
+        ),
+    )
+    context = {"profile": profile, "posts": posts}
     template = 'profile.html'
     return render(request, template, context)
 
@@ -42,7 +53,9 @@ def edit_profile(request):
 
     if request.method == "POST":
         user_form = UserForm(request.POST, instance=user)
-        user_profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        user_profile_form = UserProfileForm(
+            request.POST, request.FILES, instance=profile
+        )
         if user_form.is_valid() and user_profile_form.is_valid():
             user_form.save()
             user_profile_form.save()
@@ -67,16 +80,12 @@ def contacts(request):
 
 def search_post(request):
     query = request.GET.get('query')
-    visibility_filter = Q(visibility=Post.Visibility.PUBLIC)
 
-    if request.user.is_authenticated:
-        visibility_filter |= Q(user=request.user)
-        visibility_filter |= Q(user__in_contacts_of__user=request.user)
-
-    results = (
-        Post.objects.filter(title__unaccent__icontains=query)
-        .filter(visibility_filter)
-        .order_by('-created_at')
+    results = filter_visible_posts(
+        request,
+        Post.objects.filter(title__unaccent__icontains=query).order_by(
+            '-created_at'
+        ),
     )
     context = {"query": query, "results": results}
     template = 'search_post.html'

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "Restoring HTMX..."
+npm run copy-htmx
+
 echo "Running migrations..."
 python manage.py migrate
 
