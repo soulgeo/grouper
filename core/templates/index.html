@@ -1,6 +1,7 @@
 {% extends "master.html" %}
 {% load widget_tweaks %}
 {% load partials %}
+{% load static %}
 
 {% block title %}
 Home
@@ -36,28 +37,7 @@ Home
     {% endif %}
     <div class="flex-col" id="posts-body">
         {% for post in posts %}
-        {% partialdef post_partial inline=true %}
-        <div class="divider"></div>
-        <div class="flex gap-4">
-            <div class="avatar flex-none" name="profile-pic">
-                <div class="btn btn-ghost btn-circle w-12 h-12">
-                    <a href="/p/{{ post.user.username }}"><img class="w-full h-full object-cover"
-                            src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}"></a>
-                </div>
-            </div>
-            <div class="flex-1" name="post">
-                <div class="stat-title text-sm">
-                    <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{ post.user.last_name }} · {{ post.created_at }}</a>
-                </div>
-                <div class="font-bold text-lg">
-                    {{ post.title }}
-                </div>
-                <div>
-                    {{ post.content.text }}
-                </div>
-            </div>
-        </div>
-        {% endpartialdef post_partial %}
+        {% include "includes/post.html" %}
         {% endfor %}
     </div>
 </div>

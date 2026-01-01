@@ -9,13 +9,10 @@ Results for: {{ query }}
 {% if not results %}
 <p>No results.</p>
 {% else %}
-<ul>
+<div class="flex flex-col gap-4">
     {% for post in results %}
-    <li>
-        <h4>{{ post }}</h4>
-        <p>{{ post.content.text }}</p>
-    </li>
+    {% include "includes/post.html" %}
     {% endfor %}
-</ul>
+</div>
 {% endif %}
 {% endblock main %}

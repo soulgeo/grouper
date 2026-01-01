@@ -1,0 +1,46 @@
+{% load partials %}
+{% load static %}
+
+{% partialdef post_partial inline=true %}
+<div id="post-{{ post.id }}">
+    <div class="divider"></div>
+    <div class="flex gap-4">
+        <div class="avatar flex-none" name="profile-pic">
+            <div class="btn btn-ghost btn-circle w-12 h-12">
+                <a href="/p/{{ post.user.username }}"><img class="w-full h-full object-cover"
+                        src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}"></a>
+            </div>
+        </div>
+        <div class="flex-1" name="post">
+            <div class="stat-title text-sm">
+                <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{ post.user.last_name }} · {{ post.created_at }}</a>
+            </div>
+            <div class="font-bold text-lg">
+                {{ post.title }}
+            </div>
+            <div>
+                {{ post.content.text }}
+            </div>
+            <div class="flex flex-row items-center gap-2 mt-2">
+                <div class="font-bold text-lg">
+                    {{ post.likes.count }}
+                </div>
+                <form hx-post="{% url "like-post" post_id=post.id %}" hx-target="#post-{{ post.id }}">
+                    {% csrf_token %}
+                    {% if user in post.likes.all %}
+                    <button type="submit" class="btn btn-ghost btn-sm text-primary gap-2">
+                        <div class="w-5 h-5 bg-current" style="-webkit-mask-image: url({% static 'src/img/thumbs-up-fill-svgrepo-com.svg' %}); mask-image: url({% static 'src/img/thumbs-up-fill-svgrepo-com.svg' %}); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain;"></div>
+                        Liked
+                    </button>
+                    {% else %}
+                    <button type="submit" class="btn btn-ghost btn-sm gap-2">
+                        <div class="w-5 h-5 bg-current" style="-webkit-mask-image: url({% static 'src/img/thumbs-up-svgrepo-com.svg' %}); mask-image: url({% static 'src/img/thumbs-up-svgrepo-com.svg' %}); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain;"></div>
+                        Like
+                    </button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endpartialdef post_partial %}

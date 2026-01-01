@@ -39,7 +39,15 @@ def profile(request, username):
         request,
         Post.objects.filter(user__username=username).order_by('-created_at'),
     )
-    context = {"profile": profile, "posts": posts}
+    context = {
+        "profile": profile,
+        "posts": posts,
+        "post_form": None,
+        "post_content_form": None,
+    }
+    if request.user.username == username:
+        context["post_form"] = PostForm()
+        context["post_content_form"] = PostContentForm()
     template = 'profile.html'
     return render(request, template, context)
 
@@ -90,6 +98,24 @@ def search_post(request):
     return render(request, template, context)
 
 
+def like_post(request, post_id):
+    if not request.user.is_authenticated:
+        return redirect("/accounts/login/")
+
+    if request.method == "POST":
+        post = Post.objects.get(id=post_id)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+        else:
+            post.likes.add(request.user)
+        post.save()
+        context = {"post": post}
+        partial = 'includes/post.html#post_partial'
+        return render(request, partial, context)
+
+    return redirect("/accounts/")
+
+
 def create_post(request):
     if request.method == "POST":
         post_form = PostForm(request.POST)
@@ -107,7 +133,7 @@ def create_post(request):
             context = {
                 "post": post_instance,
             }
-            partial = 'index.html#post_partial'
+            partial = 'includes/post.html#post_partial'
             return render(request, partial, context)
         else:
             print("Form errors:", post_form.errors, post_content_form.errors)

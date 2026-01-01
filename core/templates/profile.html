@@ -1,15 +1,17 @@
 {% extends "master.html" %}
+{% load widget_tweaks %}
 {% load partials %}
+{% load static %}
 
 {% block title %}
 {{ profile.user.username }}'s profile
 {% endblock title %}
 
 {% block main %}
-<div class="flex flex-row gap-4">
+<div class="flex flex-row gap-8">
     <div class="flex flex-col gap-4 items-center max-w-72 min-w-72">
         <div class="avatar">
-            <div class="w-32 rounded-full">
+            <div class="w-48 rounded-full">
                 <img src="{{ profile.image_url }}" alt="{{ profile.user.username }}">
             </div>
         </div>
@@ -27,36 +29,40 @@
         <div class="text-sm">
             <h4>Interests:</h4>
             {% for interest in profile.interests.all %}
-            <span class="mb-1 rounded-md inline-block bg-purple-500 text-neutral-950 px-1">
-            <a href="">○ {{ interest }} </a>
-            </span>
+            <a href=""><span class="mb-1 rounded-md inline-block bg-accent text-neutral-950 px-1 hover:bg-primary duration-150">
+            ○ {{ interest }}
+            </span></a>
             {% endfor %}
         </div>
     </div>
+    <div class="divider divider-vertical"></div>
     <div class="flex flex-col gap-4 w-full">
-        {% for post in posts %}
-        {% partialdef post_partial inline=true %}
-        <div class="divider"></div>
+        {% if user == profile.user%}
         <div class="flex gap-4">
-            <div class="avatar flex-none" name="profile-pic">
-                <div class="btn btn-ghost btn-circle w-12 h-12">
-                    <a href="/p/{{ post.user.username }}"><img class="w-full h-full object-cover"
-                            src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}"></a>
+            <div class="btn btn-ghost btn-circle avatar flex-none" name="profile-pic">
+                <div class="w-16 rounded-full overflow-hidden">
+                    <a href="/p/{{ user.username }}"><img class="w-full h-full object-cover"
+                            src="{{ user.profile.image_url }}" alt="{{ user.username }}"></a>
                 </div>
             </div>
-            <div class="flex-1" name="post">
-                <div class="stat-title text-sm">
-                    <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{ post.user.last_name }} · {{ post.created_at }}</a>
-                </div>
-                <div class="font-bold text-lg">
-                    {{ post.title }}
-                </div>
-                <div>
-                    {{ post.content.text }}
-                </div>
+            <div class="flex-1">
+                <form hx-post="{% url 'submit-post' %}" hx-target="#posts-body" hx-swap="afterbegin"
+                    hx-on::after-request="this.reset()">
+                    {% csrf_token %}
+                    <div class="flex gap-4 form-control">
+                        <div class="font-bold form-control w-full">
+                            {% render_field post_form.title placeholder="Title..." class="input input-bordered"%}
+                        </div>
+                        {% render_field post_content_form.text placeholder="Share something..." class="textarea textarea-bordered h-32" %}
+                        {% render_field post_form.visibility class="select select-bordered w-32 max-w-xs" %}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-4">Create Post</button>
+                </form>
             </div>
         </div>
-        {% endpartialdef post_partial %}
+        {% endif %}
+        {% for post in posts %}
+        {% include "includes/post.html" %}
         {% endfor %}
     </div>
 </div>
