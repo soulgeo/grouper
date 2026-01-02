@@ -5,7 +5,7 @@ from nested_admin.nested import (
     NestedTabularInline,
 )
 
-from .models import Attachment, Contact, Post, PostContent
+from .models import Attachment, Contact, FriendRequest, Post, PostContent
 
 
 class AttachmentInline(NestedTabularInline):
@@ -37,3 +37,5 @@ class ContactAdmin(admin.ModelAdmin):
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Contact, ContactAdmin)
+
+admin.site.register(FriendRequest)

@@ -10,4 +10,15 @@ urlpatterns = [
     path('contacts/', views.contacts, name='contacts'),
     path('submit-post', views.create_post, name='submit-post'),
     path('like-post/<int:post_id>', views.like_post, name='like-post'),
+    path(
+        'send-friend-request/<str:username>',
+        views.send_friend_request,
+        name='send-friend-request',
+    ),
+    path('friend-requests', views.friend_requests, name='friend-requests'),
+    path(
+        'accept-friend-request/<int:id>',
+        views.accept_friend_request,
+        name='accept-friend-request',
+    ),
 ]

@@ -25,9 +25,37 @@ class Contact(models.Model):
         return f"{self.user.username} -> {self.contact.username}"
 
 
+class FriendRequest(models.Model):
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='sent_friend_requests',
+        on_delete=models.CASCADE,
+    )
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='received_friend_requests',
+        on_delete=models.CASCADE,
+    )
+
+    class Status(models.TextChoices):
+        PENDING = 'Pending', _('Pending')
+        ACCEPTED = 'Accepted', _('Accepted')
+        REJECTED = 'Rejected', _('Rejected')
+
+    status = models.TextField(
+        max_length=20, choices=Status.choices, default=Status.PENDING
+    )
+    created_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"Friend request: {self.sender.username} -> {self.receiver.username}"
+
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='posts', on_delete=models.CASCADE
+    )
 
     class Visibility(models.TextChoices):
         PUBLIC = "Public", _("Public")

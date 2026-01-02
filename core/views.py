@@ -1,12 +1,14 @@
+from functools import partial
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404, redirect, render
 
 from users.forms import UserForm, UserProfileForm
-from users.models import UserProfile
+from users.models import User, UserProfile
 
 from .forms import PostContentForm, PostForm
-from .models import Contact, Post
+from .models import Contact, FriendRequest, Post
 
 
 def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
@@ -23,9 +25,9 @@ def index(request):
     posts = filter_visible_posts(request, Post.objects.order_by('-created_at'))
 
     context = {
-        "post_form": PostForm(),
-        "post_content_form": PostContentForm(),
-        "posts": posts,
+        'post_form': PostForm(),
+        'post_content_form': PostContentForm(),
+        'posts': posts,
     }
     template = 'index.html'
     return render(request, template, context)
@@ -39,15 +41,32 @@ def profile(request, username):
         request,
         Post.objects.filter(user__username=username).order_by('-created_at'),
     )
+
+    is_contact = False
+    if request.user.is_authenticated:
+        is_contact = Contact.objects.filter(
+            user=request.user, contact=profile.user
+        ).exists()
+
+    request_sent = False
+    if request.user.is_authenticated:
+        request_sent = FriendRequest.objects.filter(
+            sender=request.user,
+            receiver=profile.user,
+            status=FriendRequest.Status.PENDING,
+        ).exists()
+
     context = {
-        "profile": profile,
-        "posts": posts,
-        "post_form": None,
-        "post_content_form": None,
+        'profile': profile,
+        'posts': posts,
+        'post_form': None,
+        'post_content_form': None,
+        'is_contact': is_contact,
+        'request_sent': request_sent,
     }
     if request.user.username == username:
-        context["post_form"] = PostForm()
-        context["post_content_form"] = PostContentForm()
+        context['post_form'] = PostForm()
+        context['post_content_form'] = PostContentForm()
     template = 'profile.html'
     return render(request, template, context)
 
@@ -57,7 +76,7 @@ def edit_profile(request):
     user = request.user
     profile = get_object_or_404(UserProfile, user=user)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         user_form = UserForm(request.POST, instance=user)
         user_profile_form = UserProfileForm(
             request.POST, request.FILES, instance=profile
@@ -65,12 +84,12 @@ def edit_profile(request):
         if user_form.is_valid() and user_profile_form.is_valid():
             user_form.save()
             user_profile_form.save()
-            return redirect("profile", username=user.username)
+            return redirect('profile', username=user.username)
     else:
         user_form = UserForm(instance=user)
         user_profile_form = UserProfileForm(instance=profile)
 
-    context = {"user_form": user_form, "user_profile_form": user_profile_form}
+    context = {'user_form': user_form, 'user_profile_form': user_profile_form}
     template = 'edit_profile.html'
     return render(request, template, context)
 
@@ -79,9 +98,64 @@ def edit_profile(request):
 def contacts(request):
     user = request.user
     contacts = Contact.objects.filter(user=user)
-    context = {"contacts": contacts}
+    context = {'contacts': contacts}
     template = 'contacts.html'
     return render(request, template, context)
+
+
+@login_required
+def friend_requests(request):
+    friend_requests = request.user.received_friend_requests.filter(
+        status=FriendRequest.Status.PENDING
+    )
+    context = {'friend_requests': friend_requests}
+    template = 'friend_requests.html'
+    return render(request, template, context)
+
+
+@login_required
+def send_friend_request(request, username):
+    if not request.method == 'POST':
+        return redirect('/')
+
+    receiver = User.objects.get(username=username)
+    friend_request = FriendRequest()
+    friend_request.sender = request.user
+    friend_request.receiver = receiver
+    friend_request.save()
+
+    context = {
+        "friend_request": friend_request,
+        "profile": receiver.profile,
+        "request_sent": True,
+    }
+    partial = 'profile.html#friend_button'
+    return render(request, partial, context)
+
+
+def accept_friend_request(request, id):
+    if not request.method == 'POST':
+        return redirect('/')
+
+    friend_request = FriendRequest.objects.get(id=id)
+
+    sender_contact = Contact()
+    sender_contact.user = friend_request.sender
+    sender_contact.contact = friend_request.receiver
+
+    receiver_contact = Contact()
+    receiver_contact.user = friend_request.receiver
+    receiver_contact.contact = friend_request.sender
+
+    friend_request.status = FriendRequest.Status.ACCEPTED
+
+    sender_contact.save()
+    receiver_contact.save()
+    friend_request.save()
+
+    context = {"friend_request": friend_request}
+    partial = "friend_requests.html#friend_request"
+    return render(request, partial, context)
 
 
 def search_post(request):
@@ -93,49 +167,53 @@ def search_post(request):
             '-created_at'
         ),
     )
-    context = {"query": query, "results": results}
+    context = {'query': query, 'results': results}
     template = 'search_post.html'
     return render(request, template, context)
 
 
+@login_required
 def like_post(request, post_id):
-    if not request.user.is_authenticated:
-        return redirect("/accounts/login/")
+    if not request.method == 'POST':
+        return redirect('/accounts/')
 
-    if request.method == "POST":
-        post = Post.objects.get(id=post_id)
-        if request.user in post.likes.all():
-            post.likes.remove(request.user)
-        else:
-            post.likes.add(request.user)
-        post.save()
-        context = {"post": post}
-        partial = 'includes/post.html#post_partial'
-        return render(request, partial, context)
+    post = Post.objects.get(id=post_id)
 
-    return redirect("/accounts/")
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+
+    else:
+        post.likes.add(request.user)
+
+    post.save()
+    context = {'post': post}
+    partial = 'includes/post.html#post_partial'
+    return render(request, partial, context)
 
 
+@login_required
 def create_post(request):
-    if request.method == "POST":
-        post_form = PostForm(request.POST)
-        post_content_form = PostContentForm(request.POST)
-        if post_form.is_valid() and post_content_form.is_valid():
-            post_instance = post_form.save(commit=False)
-            post_instance.user = request.user
+    if not request.method == 'POST':
+        return redirect('/accounts/')
 
-            post_content_instance = post_content_form.save(commit=False)
-            post_content_instance.post = post_instance
+    post_form = PostForm(request.POST)
+    post_content_form = PostContentForm(request.POST)
 
-            post_instance.save()
-            post_content_instance.save()
+    if not post_form.is_valid() or not post_content_form.is_valid():
+        print('Form errors:', post_form.errors, post_content_form.errors)
+        return redirect('/')  # Or render a template with errors
 
-            context = {
-                "post": post_instance,
-            }
-            partial = 'includes/post.html#post_partial'
-            return render(request, partial, context)
-        else:
-            print("Form errors:", post_form.errors, post_content_form.errors)
-            return redirect("/")  # Or render a template with errors
-    return redirect("/accounts/")
+    post_instance = post_form.save(commit=False)
+    post_instance.user = request.user
+
+    post_content_instance = post_content_form.save(commit=False)
+    post_content_instance.post = post_instance
+
+    post_instance.save()
+    post_content_instance.save()
+
+    context = {
+        'post': post_instance,
+    }
+    partial = 'includes/post.html#post_partial'
+    return render(request, partial, context)

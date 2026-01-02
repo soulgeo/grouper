@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.templatetags.static import static
@@ -14,6 +16,9 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
+    if TYPE_CHECKING:
+        profile: 'UserProfile'
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
@@ -24,7 +29,9 @@ class UserProfile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     email_verified_at = models.DateTimeField(null=True, blank=True)
-    interests = models.ManyToManyField("core.Interest", related_name="interests")
+    interests = models.ManyToManyField(
+        "core.Interest", related_name="interests"
+    )
 
     @property
     def image_url(self):
