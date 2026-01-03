@@ -8,17 +8,18 @@ urlpatterns = [
     path('profileedit', views.edit_profile, name='edit_profile'),
     path('search/', views.search_post, name='search'),
     path('contacts/', views.contacts, name='contacts'),
-    path('submit-post', views.create_post, name='submit-post'),
-    path('like-post/<int:post_id>', views.like_post, name='like-post'),
+    path('submit-post', views.create_post, name='submit_post'),
+    path('like-post/<int:post_id>', views.like_post, name='like_post'),
     path(
         'send-friend-request/<str:username>',
         views.send_friend_request,
         name='send-friend-request',
     ),
-    path('friend-requests', views.friend_requests, name='friend-requests'),
+    path('friend-requests', views.friend_requests, name='friend_requests'),
     path(
         'accept-friend-request/<int:id>',
         views.accept_friend_request,
         name='accept-friend-request',
     ),
+    path('search-users', views.search_users, name='search_users'),
 ]

@@ -1,0 +1,20 @@
+{% load partials %}
+{% load static %}
+
+{% partialdef user_partial inline=true %}
+<div id="user-{{ user.id }}">
+    <div class="flex gap-4 mb-2 bg-base-200 p-4 rounded-lg drop-shadow-sm">
+        <div class="avatar flex-none" name="profile-pic">
+            <div class="btn btn-ghost btn-circle w-12 h-12">
+                <a href="/p/{{ user.username }}"><img class="w-full h-full object-cover"
+                        src="{{ user.profile.image_url }}" alt="{{ user.username }}"></a>
+            </div>
+        </div>
+        <div class="flex-1" name="user">
+            <div class="font-bold text-lg">
+                <a href="/p/{{ user.username }}">{{ user.first_name}} {{ user.last_name }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endpartialdef user_partial %}

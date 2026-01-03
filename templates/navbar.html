@@ -1,9 +1,9 @@
 <nav>
-<div class="navbar bg-base-200 shadow-sm">
+<div class="navbar bg-base-300 shadow-sm">
     <div class="flex-1">
         <a class="btn btn-ghost text-xl mr-2" href="{% url 'home' %}">Grouper.</a>
-        <form method="get" action="{% url 'search' %}">
-            <input type="text" name="query" value="" placeholder="Search posts..." class="input input-bordered w-64 bg-slate-800" />
+        <form method="get" action="{% url 'search_users' %}">
+            <input type="text" name="query" value="" placeholder="Find People..." class="input input-bordered w-64 bg-slate-800" />
         </form>
     </div>
     <div class="flex-none text-lg">

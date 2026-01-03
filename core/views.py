@@ -7,8 +7,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from users.forms import UserForm, UserProfileForm
 from users.models import User, UserProfile
 
-from .forms import PostContentForm, PostForm
-from .models import Contact, FriendRequest, Post
+from .forms import (
+    PostContentForm,
+    PostForm,
+    UserProfileSearchForm,
+    UserSearchForm,
+)
+from .models import Contact, FriendRequest, InterestCategory, Post
 
 
 def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
@@ -18,7 +23,7 @@ def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
         visibility_filter |= Q(user=request.user)
         visibility_filter |= Q(user__in_contacts_of__user=request.user)
 
-    return query_set.filter(visibility_filter)
+    return query_set.filter(visibility_filter).distinct()
 
 
 def index(request):
@@ -30,6 +35,25 @@ def index(request):
         'posts': posts,
     }
     template = 'index.html'
+    return render(request, template, context)
+
+
+def search_users(request):
+    query = request.GET.get('query')
+    users = User.objects.filter(username__unaccent__icontains=query)
+
+    interest_categories = InterestCategory.objects.prefetch_related(
+        'interests'
+    ).all()
+    user_search_form = UserSearchForm()
+    user_profile_search_form = UserProfileSearchForm()
+    context = {
+        "user_search_form": user_search_form,
+        "user_profile_search_form": user_profile_search_form,
+        "interest_categories": interest_categories,
+        "users": users,
+    }
+    template = "search_users.html"
     return render(request, template, context)
 
 

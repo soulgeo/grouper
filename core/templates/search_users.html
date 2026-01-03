@@ -1,0 +1,50 @@
+{% extends "master_w_sidebar.html" %}
+{% load widget_tweaks %}
+
+{% block title %}
+User Search
+{% endblock title %}
+
+{% block sidebar %}
+<div class="flex flex-col gap-4 p-4">
+    <div class="font-bold text-lg">
+        <h3>Filters</h3>
+    </div>
+    <form hx-get="{% url 'submit_post' %}" hx-target="#search_body">
+        {% csrf_token %}
+        <div class="flex gap-4 form-control">
+            <div class="flex flex-row items-center">
+                <input type="checkbox" id="in-contacts" name="in_contacts" value="In Contacts" class="checkbox checkbox-md">
+                <label for="in-contacts" class="ml-2">In Contacts</label>
+            </div>
+            <div class="form-control">
+                {% render_field user_profile_search_form.country class="select select-bordered" %}
+            </div>
+            <div class="form-control h-96 border border-base-content/20 rounded-lg overflow-y-auto bg-base-100">
+                {% for category in interest_categories %}
+                <div class="mb-4">
+                    <h3 class="font-bold text-lg sticky top-0 bg-base-100 z-10 py-2 px-4">{{ category.name }}</h3>
+                    <div class="flex flex-col gap-2 px-4">
+                        {% for interest in category.interests.all %}
+                        <label class="label cursor-pointer justify-start gap-2 py-0">
+                            <input type="checkbox" name="interests" value="{{ interest.id }}" class="checkbox checkbox-sm" />
+                            <span class="label-text">{{ interest.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+{% endblock sidebar %}
+
+{% block main %}
+<div id="search_body" class="flex flex-col">
+{% for user in users %}
+{% include "includes/user_card.html" %}
+{% endfor %} 
+</div>
+{% endblock main %}
