@@ -3,8 +3,7 @@
 
 {% partialdef post_partial inline=true %}
 <div id="post-{{ post.id }}">
-    <div class="divider"></div>
-    <div class="flex gap-4">
+    <div class="flex gap-4 mb-2 bg-base-200 p-4 rounded-lg drop-shadow-sm">
         <div class="avatar flex-none" name="profile-pic">
             <div class="btn btn-ghost btn-circle w-12 h-12">
                 <a href="/p/{{ post.user.username }}"><img class="w-full h-full object-cover"
@@ -25,7 +24,7 @@
                 <div class="font-bold text-lg">
                     {{ post.likes.count }}
                 </div>
-                <form hx-post="{% url "like-post" post_id=post.id %}" hx-target="#post-{{ post.id }}">
+                <form hx-post="{% url "like_post" post_id=post.id %}" hx-target="#post-{{ post.id }}">
                     {% csrf_token %}
                     {% if user in post.likes.all %}
                     <button type="submit" class="btn btn-ghost btn-sm text-primary gap-2">

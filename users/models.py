@@ -30,7 +30,7 @@ class UserProfile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     email_verified_at = models.DateTimeField(null=True, blank=True)
     interests = models.ManyToManyField(
-        "core.Interest", related_name="interests"
+        "core.Interest", related_name="user_profiles"
     )
 
     @property

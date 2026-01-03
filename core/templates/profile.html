@@ -27,7 +27,7 @@
             <div id="friend-button">
                 {% if user.is_authenticated %}
                     {% if is_contact %}
-                        <a href="" class="btn btn-ghost">Friends</a>
+                        <a href="" class="btn btn-ghost">In Contacts</a>
                     {% else %}
                         {% if request_sent %}
                             <a href="" class="btn btn-ghost">Request Sent</a>
@@ -57,32 +57,13 @@
     <div class="divider divider-vertical"></div>
     <div class="flex flex-col gap-4 w-full">
         {% if user == profile.user%}
-        <div class="flex gap-4">
-            <div class="btn btn-ghost btn-circle avatar flex-none" name="profile-pic">
-                <div class="w-16 rounded-full overflow-hidden">
-                    <a href="/p/{{ user.username }}"><img class="w-full h-full object-cover"
-                            src="{{ user.profile.image_url }}" alt="{{ user.username }}"></a>
-                </div>
-            </div>
-            <div class="flex-1">
-                <form hx-post="{% url 'submit-post' %}" hx-target="#posts-body" hx-swap="afterbegin"
-                    hx-on::after-request="this.reset()">
-                    {% csrf_token %}
-                    <div class="flex gap-4 form-control">
-                        <div class="font-bold form-control w-full">
-                            {% render_field post_form.title placeholder="Title..." class="input input-bordered"%}
-                        </div>
-                        {% render_field post_content_form.text placeholder="Share something..." class="textarea textarea-bordered h-32" %}
-                        {% render_field post_form.visibility class="select select-bordered w-32 max-w-xs" %}
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-4">Create Post</button>
-                </form>
-            </div>
-        </div>
+        {% include "includes/post_form.html" %}
         {% endif %}
-        {% for post in posts %}
-        {% include "includes/post.html" %}
-        {% endfor %}
+        <div class="flex-col" id="posts-body">
+            {% for post in posts %}
+            {% include "includes/post.html" %}
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock main %}

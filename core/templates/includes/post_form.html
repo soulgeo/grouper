@@ -1,0 +1,25 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-md">
+    <div class="btn btn-ghost btn-circle avatar flex-none" name="profile-pic">
+        <div class="w-16 rounded-full overflow-hidden">
+            <a href="/p/{{ user.username }}"><img class="w-full h-full object-cover"
+                    src="{{ user.profile.image_url }}" alt="{{ user.username }}"></a>
+        </div>
+    </div>
+    <div class="flex flex-col w-full">
+        <form hx-post="{% url 'submit_post' %}" hx-target="#posts-body" hx-swap="afterbegin"
+            hx-on::after-request="this.reset()">
+            {% csrf_token %}
+            <div class="flex gap-4 form-control">
+                <div class="font-bold form-control w-full">
+                    {% render_field post_form.title placeholder="Title..." class="input input-bordered"%}
+                </div>
+                {% render_field post_content_form.text placeholder="Share something..." class="textarea textarea-bordered h-32" %}
+                {% render_field post_form.visibility class="select select-bordered w-32 max-w-xs" %}
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">Create Post</button>
+        </form>
+    </div>
+</div>
