@@ -1,0 +1,20 @@
+{% load partials %}
+
+{% partialdef friend_button inline=true %}
+<div id="friend-button-{{ profile.user.id }}">
+    {% if user.is_authenticated %}
+    {% if profile.is_contact %}
+    <a href="" class="btn btn-ghost">In Contacts</a>
+    {% else %}
+    {% if profile.request_sent %}
+    <div class="btn btn-ghost">Request Sent</div>
+    {% else %}
+    <form hx-post="{% url 'send-friend-request' username=profile.user.username %}" hx-target="#friend-button-{{ profile.user.id }}" hx-swap="outerHTML">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Add Friend</button>
+    </form>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+</div>
+{% endpartialdef %}

@@ -1,7 +1,5 @@
-from functools import partial
-
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, QuerySet
+from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Value
 from django.shortcuts import get_object_or_404, redirect, render
 
 from users.forms import UserForm, UserProfileForm
@@ -40,7 +38,30 @@ def index(request):
 
 def search_users(request):
     query = request.GET.get('query')
-    users = User.objects.filter(username__unaccent__icontains=query)
+    profiles = UserProfile.objects.filter(
+        user__username__unaccent__icontains=query
+    )
+
+    if request.user.is_authenticated:
+        profiles = profiles.annotate(
+            is_contact=Exists(
+                Contact.objects.filter(
+                    user=request.user, contact=OuterRef('user')
+                )
+            ),
+            request_sent=Exists(
+                FriendRequest.objects.filter(
+                    sender=request.user,
+                    receiver=OuterRef('user'),
+                    status=FriendRequest.Status.PENDING,
+                )
+            ),
+        )
+    else:
+        profiles = profiles.annotate(
+            is_contact=Value(False, output_field=BooleanField()),
+            request_sent=Value(False, output_field=BooleanField()),
+        )
 
     interest_categories = InterestCategory.objects.prefetch_related(
         'interests'
@@ -51,42 +72,47 @@ def search_users(request):
         "user_search_form": user_search_form,
         "user_profile_search_form": user_profile_search_form,
         "interest_categories": interest_categories,
-        "users": users,
+        "profiles": profiles,
     }
     template = "search_users.html"
     return render(request, template, context)
 
 
 def profile(request, username):
-    profile = get_object_or_404(
-        UserProfile.objects.select_related('user'), user__username=username
-    )
+    qs = UserProfile.objects.select_related('user')
+    if request.user.is_authenticated:
+        qs = qs.annotate(
+            is_contact=Exists(
+                Contact.objects.filter(
+                    user=request.user, contact=OuterRef('user')
+                )
+            ),
+            request_sent=Exists(
+                FriendRequest.objects.filter(
+                    sender=request.user,
+                    receiver=OuterRef('user'),
+                    status=FriendRequest.Status.PENDING,
+                )
+            ),
+        )
+    else:
+        qs = qs.annotate(
+            is_contact=Value(False, output_field=BooleanField()),
+            request_sent=Value(False, output_field=BooleanField()),
+        )
+
+    profile = get_object_or_404(qs, user__username=username)
+
     posts = filter_visible_posts(
         request,
         Post.objects.filter(user__username=username).order_by('-created_at'),
     )
-
-    is_contact = False
-    if request.user.is_authenticated:
-        is_contact = Contact.objects.filter(
-            user=request.user, contact=profile.user
-        ).exists()
-
-    request_sent = False
-    if request.user.is_authenticated:
-        request_sent = FriendRequest.objects.filter(
-            sender=request.user,
-            receiver=profile.user,
-            status=FriendRequest.Status.PENDING,
-        ).exists()
 
     context = {
         'profile': profile,
         'posts': posts,
         'post_form': None,
         'post_content_form': None,
-        'is_contact': is_contact,
-        'request_sent': request_sent,
     }
     if request.user.username == username:
         context['post_form'] = PostForm()
@@ -148,12 +174,16 @@ def send_friend_request(request, username):
     friend_request.receiver = receiver
     friend_request.save()
 
+    profile = UserProfile.objects.annotate(
+        is_contact=Value(False, output_field=BooleanField()),
+        request_sent=Value(True, output_field=BooleanField()),
+    ).get(user=receiver)
+
     context = {
         "friend_request": friend_request,
-        "profile": receiver.profile,
-        "request_sent": True,
+        "profile": profile,
     }
-    partial = 'profile.html#friend_button'
+    partial = 'includes/friend_button.html#friend_button'
     return render(request, partial, context)
 
 

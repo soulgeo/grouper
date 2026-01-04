@@ -23,24 +23,7 @@
             Edit profile
         </a>
         {% else %}
-            {% partialdef friend_button inline=true %}
-            <div id="friend-button">
-                {% if user.is_authenticated %}
-                    {% if is_contact %}
-                        <a href="" class="btn btn-ghost">In Contacts</a>
-                    {% else %}
-                        {% if request_sent %}
-                            <a href="" class="btn btn-ghost">Request Sent</a>
-                        {% else %}
-                            <form hx-post="{% url 'send-friend-request' username=profile.user.username %}" hx-target="#friend-button">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">Add Friend</button>
-                            </form>
-                        {% endif %}
-                    {% endif %}
-                {% endif %}
-            </div>
-            {% endpartialdef %}
+        {% include "includes/friend_button.html" %}
         {% endif %}
         <div class="text-md">
             <p>{{profile.bio}}</p>
