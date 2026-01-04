@@ -12,13 +12,15 @@
     <div class="m-0 fixed w-full top-0 left-0 z-10">
         {% include "navbar.html" %}
     </div>
-    <div class="fixed bg-base-200 h-full top-0 pt-16">
+    <div class="fixed bg-base-200 h-full top-0 pt-16 w-80">
         {% block sidebar %}
         {% endblock sidebar %}
     </div>
-    <div class="w-full max-w-screen-lg mx-auto px-4 mt-28 mb-8 pl-6">
-        {% block main %}
-        {% endblock main %}
+    <div class="ml-80 pt-24">
+        <div class="max-w-screen-lg mx-auto px-4 mb-8">
+            {% block main %}
+            {% endblock main %}
+        </div>
     </div>
 </body>
 
