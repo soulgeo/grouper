@@ -15,7 +15,9 @@
                 <a href="/p/{{ profile.user.username }}">{{ profile.user.first_name}} {{ profile.user.last_name }}</a>
             </div>
         </div>
+        {% if profile.user != user %}
         {% include "includes/friend_button.html" %}
+        {% endif %}
     </div>
 </div>
 {% endpartialdef user_partial %}
