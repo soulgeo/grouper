@@ -158,12 +158,26 @@ def edit_profile(request):
         if user_form.is_valid() and user_profile_form.is_valid():
             user_form.save()
             user_profile_form.save()
+
+            interests = request.POST.getlist('interests')
+            profile.interests.set(interests)
+
             return redirect('profile', username=user.username)
     else:
         user_form = UserForm(instance=user)
         user_profile_form = UserProfileForm(instance=profile)
 
-    context = {'user_form': user_form, 'user_profile_form': user_profile_form}
+    interest_categories = InterestCategory.objects.prefetch_related(
+        'interests'
+    ).all()
+    selected_interests = list(profile.interests.values_list('id', flat=True))
+
+    context = {
+        'user_form': user_form,
+        'user_profile_form': user_profile_form,
+        'interest_categories': interest_categories,
+        'selected_interests': selected_interests,
+    }
     template = 'edit_profile.html'
     return render(request, template, context)
 

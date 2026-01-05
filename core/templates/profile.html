@@ -31,7 +31,7 @@
         <div class="text-sm">
             <h4>Interests:</h4>
             {% for interest in profile.interests.all %}
-            <a href=""><span class="mb-1 rounded-md inline-block bg-accent text-neutral-950 px-1 hover:bg-primary duration-150">
+            <a href="{% url 'search_users' %}?query=&interests={{ interest.id }}"><span class="mb-1 rounded-md inline-block bg-accent text-neutral-950 px-1 hover:bg-primary duration-150">
             ○ {{ interest }}
             </span></a>
             {% endfor %}

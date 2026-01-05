@@ -19,7 +19,21 @@ Edit Profile: {{ user.username }}
             {% render_field user_form.first_name placeholder="First Name" class="input input-bordered"%}
             {% render_field user_form.last_name placeholder="Last Name" class="input input-bordered"%}
             {% render_field user_profile_form.bio placeholder="A few things about yourself..." class="textarea textarea-bordered h-32" %}
-            {% render_field post_form.visibility class="select select-bordered w-32 max-w-xs" %}
+            <div class="form-control h-72 border border-base-content/20 rounded-lg overflow-y-auto bg-base-100">
+                {% for category in interest_categories %}
+                <div class="mb-4">
+                    <h3 class="font-bold text-lg sticky top-0 bg-base-100 z-10 py-2 px-4">{{ category.name }}</h3>
+                    <div class="flex flex-col gap-2 px-4">
+                        {% for interest in category.interests.all %}
+                        <label class="label cursor-pointer justify-start gap-2 py-0">
+                            <input type="checkbox" name="interests" value="{{ interest.id }}" class="checkbox checkbox-sm" {% if interest.id in selected_interests %}checked{% endif %} />
+                            <span class="label-text">{{ interest.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         <button type="submit" class="btn btn-primary mt-4">Save</button>
     </form>
