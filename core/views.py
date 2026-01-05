@@ -38,9 +38,23 @@ def index(request):
 
 def search_users(request):
     query = request.GET.get('query')
+
+    in_contacts = request.GET.get('in_contacts')
+    country = request.GET.get('country')
+    interests = request.GET.getlist('interests')
+
     profiles = UserProfile.objects.filter(
         user__username__unaccent__icontains=query
     )
+
+    if interests:
+        profiles = profiles.filter(interests__in=interests)
+
+    if country:
+        profiles = profiles.filter(country=country)
+
+    if in_contacts:
+        profiles = profiles.filter(user__in_contacts_of__user=request.user)
 
     if request.user.is_authenticated:
         profiles = profiles.annotate(
@@ -66,9 +80,19 @@ def search_users(request):
     interest_categories = InterestCategory.objects.prefetch_related(
         'interests'
     ).all()
-    user_search_form = UserSearchForm()
-    user_profile_search_form = UserProfileSearchForm()
+    user_search_form = UserSearchForm(request.GET)
+    user_profile_search_form = UserProfileSearchForm(request.GET)
+
+    try:
+        selected_interests = [int(i) for i in interests]
+    except ValueError:
+        selected_interests = []
+
     context = {
+        "query": query,
+        "in_contacts": in_contacts,
+        "selected_interests": selected_interests,
+        "country": country,
         "user_search_form": user_search_form,
         "user_profile_search_form": user_profile_search_form,
         "interest_categories": interest_categories,
