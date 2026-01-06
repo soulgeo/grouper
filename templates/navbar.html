@@ -7,7 +7,14 @@
                 <option value="users">People</option>
                 <option value="posts">Posts</option>
             </select>
-            <input type="text" name="query" value="{{ query }}" placeholder="Find People..." class="input input-bordered w-64 bg-slate-800 join-item" id="navbar-search-input" />
+            <label class="input input-bordered flex items-center join-item bg-slate-800 w-64 pr-4">
+                <input type="text" name="query" value="{{ query }}" placeholder="Find People..." class="grow min-w-0 border-none focus:ring-0 bg-transparent p-0" id="navbar-search-input" />
+                <button type="submit" class="flex-none text-neutral-content/70 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </label>
         </form>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
