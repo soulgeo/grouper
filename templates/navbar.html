@@ -2,13 +2,21 @@
 <div class="navbar bg-base-300 shadow-sm">
     <div class="flex-1">
         <a class="btn btn-ghost text-xl mr-2" href="{% url 'home' %}">Grouper.</a>
-        <form method="get" action="{% url 'search_users' %}" id="navbar-search-form" class="join">
-            <select id="navbar-search-select" class="select select-bordered join-item bg-slate-800">
-                <option value="users">People</option>
-                <option value="posts">Posts</option>
-            </select>
+        <form method="get" action="{% url 'search' %}" id="navbar-search-form" class="join">
+            <div class="dropdown join-item">
+                <div tabindex="0" role="button" id="navbar-search-btn" class="btn btn-bordered join-item bg-slate-800 hover:bg-slate-700 border-base-content/20 border-r-0 no-animation flex flex-nowrap gap-1 w-28 justify-between">
+                    Posts
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[100] w-40 p-2 shadow-lg mt-1">
+                    <li><a class="search-type-option" data-type="posts">Posts</a></li>
+                    <li><a class="search-type-option" data-type="users">People</a></li>
+                </ul>
+            </div>
             <label class="input input-bordered flex items-center join-item bg-slate-800 w-64 pr-4">
-                <input type="text" name="query" value="{{ query }}" placeholder="Find People..." class="grow min-w-0 border-none focus:ring-0 bg-transparent p-0" id="navbar-search-input" />
+                <input type="text" name="query" value="{{ query }}" placeholder="Search posts..." class="grow min-w-0 border-none focus:ring-0 bg-transparent p-0" id="navbar-search-input" />
                 <button type="submit" class="flex-none text-neutral-content/70 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -18,13 +26,16 @@
         </form>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const select = document.getElementById('navbar-search-select');
                 const form = document.getElementById('navbar-search-form');
                 const input = document.getElementById('navbar-search-input');
+                const searchBtn = document.getElementById('navbar-search-btn');
+                const options = document.querySelectorAll('.search-type-option');
                 const path = window.location.pathname;
 
                 function setSearchType(type) {
-                    select.value = type;
+                    const typeText = type === 'posts' ? 'Posts' : 'People';
+                    searchBtn.innerHTML = `${typeText} <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>`;
+                    
                     if (type === 'posts') {
                         form.action = "{% url 'search' %}";
                         input.placeholder = "Search posts...";
@@ -33,10 +44,14 @@
                         input.placeholder = "Find People...";
                     }
                     localStorage.setItem('navbar-search-preference', type);
+                    
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                    }
                 }
 
                 // Determine initial state
-                let initialType = 'users'; // Default
+                let initialType = 'posts'; // Default
                 if (path.includes('/search/')) {
                     initialType = 'posts';
                 } else if (path.includes('/search-users')) {
@@ -50,8 +65,11 @@
 
                 setSearchType(initialType);
 
-                select.addEventListener('change', function(e) {
-                    setSearchType(e.target.value);
+                options.forEach(option => {
+                    option.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        setSearchType(this.getAttribute('data-type'));
+                    });
                 });
             });
         </script>

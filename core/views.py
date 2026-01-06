@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Value
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from users.forms import UserProfileForm
+from users.forms import UserForm, UserProfileForm
 from users.models import User, UserProfile
 
 from .forms import (
@@ -337,7 +338,7 @@ def like_post(request, post_id):
 @login_required
 def create_post(request):
     if not request.method == 'POST':
-        return redirect('/accounts/')
+        return redirect('/accounts/')  # TODO: Change Redirect
 
     post_form = PostForm(request.POST)
     post_content_form = PostContentForm(request.POST)
@@ -346,7 +347,7 @@ def create_post(request):
 
     if not post_form.is_valid() or not post_content_form.is_valid():
         print('Form errors:', post_form.errors, post_content_form.errors)
-        return redirect('/')  # Or render a template with errors
+        return redirect('/')  # TODO: Error Template
 
     post_instance = post_form.save(commit=False)
     post_instance.user = request.user
@@ -364,3 +365,18 @@ def create_post(request):
     }
     partial = 'includes/post.html#post_partial'
     return render(request, partial, context)
+
+
+@login_required
+def delete_post(request, post_id):
+    if not request.method == 'POST':
+        return redirect('/accounts/')  # TODO: Change Redirect
+
+    post = get_object_or_404(Post, id=post_id)
+
+    if post.user != request.user:
+        return HttpResponse("Unauthorized", status=403)
+
+    post.delete()
+
+    return HttpResponse("")
