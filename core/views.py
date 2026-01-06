@@ -142,11 +142,16 @@ def profile(request, username):
         Post.objects.filter(user__username=username).order_by('-created_at'),
     )
 
+    interest_categories = InterestCategory.objects.prefetch_related(
+        'interests'
+    ).all()
+
     context = {
         'profile': profile,
         'posts': posts,
         'post_form': None,
         'post_content_form': None,
+        'interest_categories': interest_categories,
     }
     if request.user.username == username:
         context['post_form'] = PostForm()

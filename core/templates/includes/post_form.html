@@ -1,44 +1,110 @@
 {% load static %}
 {% load widget_tweaks %}
 
-<div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-sm">
-    <div class="btn btn-ghost btn-circle avatar flex-none" name="profile-pic">
-        <div class="w-16 rounded-full overflow-hidden">
-            <a href="/p/{{ user.username }}"><img class="w-full h-full object-cover"
-                src="{{ user.profile.image_url }}" alt="{{ user.username }}"></a>
+<!-- Trigger for the Post Modal -->
+<div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-sm cursor-pointer hover:bg-base-300 transition-colors duration-200" onclick="post_modal.showModal()">
+    <a href="/p/{{ user.username }}" class="btn btn-ghost btn-circle avatar flex-none" onclick="event.stopPropagation()">
+        <div class="w-10 rounded-full overflow-hidden">
+            <img class="w-full h-full object-cover" src="{{ user.profile.image_url }}" alt="{{ user.username }}">
+        </div>
+    </a>
+    <div class="flex items-center w-full">
+        <div class="w-full h-10 px-4 rounded-full bg-base-100 flex items-center text-base-content/60 border border-base-content/10">
+            Share something...
         </div>
     </div>
-    <div class="flex flex-col w-full">
-        <form hx-post="{% url 'submit_post' %}" hx-target="#posts-body" hx-swap="afterbegin"
-            hx-on::after-request="this.reset()">
-            {% csrf_token %}
-            <div class="flex flex-row gap-4">
-                <div class="flex flex-col w-full gap-4 form-control">
-                    <div class="font-bold form-control w-full">
-                        {% render_field post_form.title placeholder="Title..." class="input input-bordered"%}
-                    </div>
-                    {% render_field post_content_form.text placeholder="Share something..." class="textarea textarea-bordered h-48" %}
-                    {% render_field post_form.visibility class="select select-bordered w-32 max-w-xs" %}
+</div>
+
+<!-- Post Modal -->
+<dialog id="post_modal" class="modal">
+    <div class="modal-box w-11/12 max-w-5xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <h3 class="font-bold text-lg mb-4 text-center">Create Post</h3>
+
+        <div class="flex flex-row gap-4">
+            <div class="btn btn-ghost btn-circle avatar flex-none">
+                <div class="w-10 rounded-full overflow-hidden">
+                    <a href="/p/{{ user.username }}">
+                        <img class="w-full h-full object-cover" src="{{ user.profile.image_url }}" alt="{{ user.username }}">
+                    </a>
                 </div>
-                <div class="form-control">
-                    <div class="w-56 h-64 border border-base-content/20 rounded-lg overflow-y-auto bg-base-100">
-                        {% for category in interest_categories %}
-                        <div class="mb-4">
-                            <h3 class="font-bold text-lg sticky top-0 bg-base-100 z-10 py-2 px-4">{{ category.name }}</h3>
-                            <div class="flex flex-col gap-2 px-4">
-                                {% for interest in category.interests.all %}
-                                <label class="label cursor-pointer justify-start gap-2 py-0">
-                                    <input type="checkbox" name="interests" value="{{ interest.id }}" class="checkbox checkbox-sm" {% if interest.id in selected_interests %}checked{% endif %} />
-                                    <span class="label-text">{{ interest.name }}</span>
-                                </label>
+            </div>
+            <div class="flex flex-col w-full">
+                <!-- 
+                     hx-on::after-request="this.reset(); updateVisibility('Public', 'Public'); post_modal.close()" 
+                     ensures the form resets, the visibility label resets, and the modal closes after submission 
+                -->
+                <form hx-post="{% url 'submit_post' %}" hx-target="#posts-body" hx-swap="afterbegin"
+                    hx-on::after-request="this.reset(); updateVisibility('Public', 'Public'); post_modal.close()">
+                    {% csrf_token %}
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex flex-col w-full gap-4 form-control">
+                            <div class="font-bold form-control w-full">
+                                {% render_field post_form.title placeholder="Title..." class="input input-bordered focus:outline-none" %}
+                            </div>
+                            {% render_field post_content_form.text placeholder="Share something..." class="textarea textarea-bordered h-48 focus:outline-none text-lg resize-none" %}
+                            
+                            <div class="flex flex-row justify-between items-center mt-2">
+                                <div class="dropdown dropdown-top">
+                                    <div tabindex="0" role="button" class="btn btn-sm btn-ghost bg-base-200 gap-2 normal-case" id="visibility-trigger">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        <span id="visibility-label">Public</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                    <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow-lg mb-2">
+                                        <li><a onclick="updateVisibility('Public', 'Public')">Public</a></li>
+                                        <li><a onclick="updateVisibility('Contacts Only', 'Contacts Only')">Contacts Only</a></li>
+                                    </ul>
+                                    <div class="hidden">
+                                        {% render_field post_form.visibility id="visibility-input" %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                function updateVisibility(value, label) {
+                                    const input = document.getElementById('visibility-input');
+                                    const labelSpan = document.getElementById('visibility-label');
+                                    if (input && labelSpan) {
+                                        input.value = value;
+                                        labelSpan.innerText = label;
+                                    }
+                                    if (document.activeElement) {
+                                        document.activeElement.blur();
+                                    }
+                                }
+                            </script>
+                        </div>
+                        
+                        <!-- Interests Section -->
+                        <div class="form-control w-full md:w-auto">
+                            <div class="w-full md:w-64 h-48 md:h-64 border border-base-content/20 rounded-lg overflow-y-auto bg-base-100 scrollbar-thin">
+                                {% for category in interest_categories %}
+                                <div class="mb-4">
+                                    <h3 class="font-bold text-sm sticky top-0 bg-base-200 z-10 py-2 px-4 shadow-sm">{{ category.name }}</h3>
+                                    <div class="flex flex-col gap-1 px-4 mt-2">
+                                        {% for interest in category.interests.all %}
+                                        <label class="label cursor-pointer justify-start gap-2 py-1 hover:bg-base-200 rounded-md px-1 -mx-1 transition-colors">
+                                            <input type="checkbox" name="interests" value="{{ interest.id }}" class="checkbox checkbox-xs" {% if interest.id in selected_interests %}checked{% endif %} />
+                                            <span class="label-text text-sm">{{ interest.name }}</span>
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                                 {% endfor %}
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
-                </div>
+                    <div class="flex justify-end mt-4">
+                        <button type="submit" class="btn btn-primary px-8">Post</button>
+                    </div>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary mt-4">Create Post</button>
-        </form>
+        </div>
     </div>
-</div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
