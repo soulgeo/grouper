@@ -12,7 +12,7 @@
         </div>
         <div class="flex-1 relative" name="post">
             <div class="stat-title text-sm pr-10">
-                <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{ post.user.last_name }} · {{ post.created_at }}</a>
+                <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{ post.user.last_name }}</a> · {{ post.created_at }}, {{ post.visibility }}
             </div>
             {% if user == post.user %}
             <div class="dropdown dropdown-end absolute top-0 right-0">
