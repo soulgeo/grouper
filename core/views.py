@@ -1,10 +1,8 @@
-from re import Match
-
 from django.contrib.auth.decorators import login_required
 from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Value
 from django.shortcuts import get_object_or_404, redirect, render
 
-from users.forms import UserForm, UserProfileForm
+from users.forms import UserProfileForm
 from users.models import User, UserProfile
 
 from .forms import (
@@ -28,11 +26,15 @@ def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
 
 def index(request):
     posts = filter_visible_posts(request, Post.objects.order_by('-created_at'))
+    interest_categories = InterestCategory.objects.prefetch_related(
+        'interests'
+    ).all()
 
     context = {
         'post_form': PostForm(),
         'post_content_form': PostContentForm(),
         'posts': posts,
+        'interest_categories': interest_categories,
     }
     template = 'index.html'
     return render(request, template, context)
@@ -101,7 +103,6 @@ def search_users(request):
         "matching_interests": matching_interests,
         "country": country,
         "selected_interests": selected_interests,
-        "user_search_form": user_search_form,
         "user_profile_search_form": user_profile_search_form,
         "interest_categories": interest_categories,
         "profiles": profiles,
@@ -341,6 +342,8 @@ def create_post(request):
     post_form = PostForm(request.POST)
     post_content_form = PostContentForm(request.POST)
 
+    interests = request.POST.getlist('interests')
+
     if not post_form.is_valid() or not post_content_form.is_valid():
         print('Form errors:', post_form.errors, post_content_form.errors)
         return redirect('/')  # Or render a template with errors
@@ -352,6 +355,8 @@ def create_post(request):
     post_content_instance.post = post_instance
 
     post_instance.save()
+    post_instance.interests.set(interests)
+
     post_content_instance.save()
 
     context = {

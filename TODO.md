@@ -9,7 +9,8 @@
 
 ### Small Adds/Fixes
 
-- [ ] Interests in post creation form
+- [x] Interests in post creation form
+- [ ] Edit and Delete posts
 - [ ] Display post visibility
 - [ ] Integrate friend requests and contacts in UI
 - [ ] Fix profile image CRUD
