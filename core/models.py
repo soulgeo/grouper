@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -66,6 +68,10 @@ class Interest(models.Model):
 
 
 class Post(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        content: 'PostContent'
+
     title = models.CharField(max_length=100)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='posts', on_delete=models.CASCADE

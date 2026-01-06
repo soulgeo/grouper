@@ -1,8 +1,11 @@
 {% load static %}
 {% load widget_tweaks %}
 
+{% with modal_id=modal_id|default:"post_modal" %}
+
+{% if not hide_trigger %}
 <!-- Trigger for the Post Modal -->
-<div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-sm cursor-pointer hover:bg-base-300 transition-colors duration-200" onclick="post_modal.showModal()">
+<div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-sm cursor-pointer hover:bg-base-300 transition-colors duration-200" onclick="{{ modal_id }}.showModal()">
     <a href="/p/{{ user.username }}" class="btn btn-ghost btn-circle avatar flex-none" onclick="event.stopPropagation()">
         <div class="w-10 rounded-full overflow-hidden">
             <img class="w-full h-full object-cover" src="{{ user.profile.image_url }}" alt="{{ user.username }}">
@@ -14,14 +17,15 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <!-- Post Modal -->
-<dialog id="post_modal" class="modal">
+<dialog id="{{ modal_id }}" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
-        <h3 class="font-bold text-lg mb-4 text-center">Create Post</h3>
+        <h3 class="font-bold text-lg mb-4 text-center">{{ form_title|default:"Create Post" }}</h3>
 
         <div class="flex flex-row gap-4">
             <div class="btn btn-ghost btn-circle avatar flex-none">
@@ -36,8 +40,8 @@
                      hx-on::after-request="this.reset(); updateVisibility('Public', 'Public'); post_modal.close()" 
                      ensures the form resets, the visibility label resets, and the modal closes after submission 
                 -->
-                <form hx-post="{% url 'submit_post' %}" hx-target="#posts-body" hx-swap="afterbegin"
-                    hx-on::after-request="this.reset(); updateVisibility('Public', 'Public'); post_modal.close()">
+                <form hx-post="{{ post_url|default:'/submit-post' }}" hx-target="{{ hx_target|default:'#posts-body' }}" hx-swap="{{ hx_swap|default:'afterbegin' }}"
+                    hx-on::after-request="this.reset(); updateVisibility(this, 'Public', 'Public'); {{ modal_id }}.close()">
                     {% csrf_token %}
                     <div class="flex flex-col md:flex-row gap-4">
                         <div class="flex flex-col w-full gap-4 form-control">
@@ -48,30 +52,40 @@
                             
                             <div class="flex flex-row justify-between items-center mt-2">
                                 <div class="dropdown dropdown-top">
-                                    <div tabindex="0" role="button" class="btn btn-sm btn-ghost bg-base-200 gap-2 normal-case" id="visibility-trigger">
+                                    <div tabindex="0" role="button" class="btn btn-sm btn-ghost bg-base-200 gap-2 normal-case" id="{{ modal_id }}_visibility-trigger">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                        <span id="visibility-label">Public</span>
+                                        <span id="{{ modal_id }}_visibility-label">Public</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                     </div>
                                     <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow-lg mb-2">
-                                        <li><a onclick="updateVisibility('Public', 'Public')">Public</a></li>
-                                        <li><a onclick="updateVisibility('Contacts Only', 'Contacts Only')">Contacts Only</a></li>
+                                        <li><a onclick="updateVisibility(this, 'Public', 'Public')">Public</a></li>
+                                        <li><a onclick="updateVisibility(this, 'Contacts Only', 'Contacts Only')">Contacts Only</a></li>
                                     </ul>
                                     <div class="hidden">
-                                        {% render_field post_form.visibility id="visibility-input" %}
+                                        {% with visibility_input_id=modal_id|add:"_visibility-input" %}
+                                            {% render_field post_form.visibility id=visibility_input_id %}
+                                        {% endwith %}
                                     </div>
                                 </div>
                             </div>
 
                             <script>
-                                function updateVisibility(value, label) {
-                                    const input = document.getElementById('visibility-input');
-                                    const labelSpan = document.getElementById('visibility-label');
+                                function updateVisibility(element, value, label) {
+                                    // element is either the form (on reset) or the anchor tag (on click)
+                                    // If it's the form, we need to find the input within it.
+                                    let container = element.closest('form');
+                                    if (!container) return;
+
+                                    const input = container.querySelector('[name="visibility"]');
+                                    // Find the label span. We look for the span inside the trigger button which is in the same container.
+                                    const trigger = container.querySelector('[id$="_visibility-trigger"]');
+                                    const labelSpan = trigger ? trigger.querySelector('span') : null;
+
                                     if (input && labelSpan) {
                                         input.value = value;
                                         labelSpan.innerText = label;
                                     }
-                                    if (document.activeElement) {
+                                    if (document.activeElement && element.tagName === 'A') {
                                         document.activeElement.blur();
                                     }
                                 }
@@ -98,7 +112,7 @@
                         </div>
                     </div>
                     <div class="flex justify-end mt-4">
-                        <button type="submit" class="btn btn-primary px-8">Post</button>
+                        <button type="submit" class="btn btn-primary px-8">{{ submit_text|default:"Post" }}</button>
                     </div>
                 </form>
             </div>
@@ -108,3 +122,4 @@
         <button>close</button>
     </form>
 </dialog>
+{% endwith %}

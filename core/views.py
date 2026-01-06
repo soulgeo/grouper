@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from users.forms import UserForm, UserProfileForm
 from users.models import User, UserProfile
@@ -12,7 +13,7 @@ from .forms import (
     UserProfileSearchForm,
     UserSearchForm,
 )
-from .models import Contact, FriendRequest, InterestCategory, Post
+from .models import Contact, FriendRequest, InterestCategory, Post, PostContent
 
 
 def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
@@ -352,7 +353,7 @@ def create_post(request):
 
     if not post_form.is_valid() or not post_content_form.is_valid():
         print('Form errors:', post_form.errors, post_content_form.errors)
-        return redirect('/')  # TODO: Error Template
+        return redirect('/')  # TODO: Error
 
     post_instance = post_form.save(commit=False)
     post_instance.user = request.user
@@ -385,3 +386,60 @@ def delete_post(request, post_id):
     post.delete()
 
     return HttpResponse("")
+
+
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if post.user != request.user:
+        return HttpResponse("Unauthorized", status=403)
+
+    if request.method == 'GET':
+        post_form = PostForm(instance=post)
+        post_content_form = PostContentForm(instance=post.content)
+
+        interest_categories = InterestCategory.objects.prefetch_related(
+            'interests'
+        ).all()
+        selected_interests = list(post.interests.values_list('id', flat=True))
+
+        context = {
+            'post_form': post_form,
+            'post_content_form': post_content_form,
+            'interest_categories': interest_categories,
+            'selected_interests': selected_interests,
+            'modal_id': f'edit_modal_{post.id}',
+            'form_title': 'Edit Post',
+            'submit_text': 'Edit',
+            'post_url': reverse('edit_post', args=[post.id]),
+            'hx_target': f'#post-{post.id}',
+            'hx_swap': 'outerHTML',
+            'hide_trigger': True,
+        }
+        return render(request, 'includes/post_form.html', context)
+
+    # POST
+    if not request.method == 'POST':
+        return redirect('/accounts/')  # TODO: Change Redirect
+
+    post_content = get_object_or_404(PostContent, post=post)
+
+    interests = request.POST.getlist('interests')
+
+    post_form = PostForm(request.POST, instance=post)
+    post_content_form = PostContentForm(request.POST, instance=post_content)
+
+    if not post_form.is_valid() or not post_content_form.is_valid():
+        print('Form errors:', post_form.errors, post_content_form.errors)
+        return redirect('/')  # TODO: Error
+
+    post_form.save()
+    post.interests.set(interests)
+
+    post_content_form.save()
+
+    context = {
+        'post': post,
+    }
+    partial = 'includes/post.html#post_partial'
+    return render(request, partial, context)
