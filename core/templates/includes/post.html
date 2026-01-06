@@ -20,6 +20,11 @@
             <div>
                 {{ post.content.text }}
             </div>
+            <div class="mt-2">
+                {% for interest in post.interests.all %}
+                {% include "includes/interest.html" %}
+                {% endfor %}
+            </div>
             <div class="flex flex-row items-center gap-2 mt-2">
                 <div class="font-bold text-lg">
                     {{ post.likes.count }}

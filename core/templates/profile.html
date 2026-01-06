@@ -29,16 +29,13 @@
             <p>{{profile.bio}}</p>
         </div>
         <div class="text-sm">
-            <h4>Interests:</h4>
             {% for interest in profile.interests.all %}
-            <a href="{% url 'search_users' %}?query=&interests={{ interest.id }}"><span class="mb-1 rounded-md inline-block bg-accent text-neutral-950 px-1 hover:bg-primary duration-150">
-            ○ {{ interest }}
-            </span></a>
+            {% include "includes/interest.html" %}
             {% endfor %}
         </div>
     </div>
     <div class="divider divider-vertical"></div>
-    <div class="flex flex-col gap-4 w-full">
+    <div class="flex flex-col gap-2 w-full">
         {% if user == profile.user%}
         {% include "includes/post_form.html" %}
         {% endif %}

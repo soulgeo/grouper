@@ -2,9 +2,52 @@
 <div class="navbar bg-base-300 shadow-sm">
     <div class="flex-1">
         <a class="btn btn-ghost text-xl mr-2" href="{% url 'home' %}">Grouper.</a>
-        <form method="get" action="{% url 'search_users' %}">
-                <input type="text" name="query" value="{{ query }}" placeholder="Find People..." class="input input-bordered w-64 bg-slate-800" />
+        <form method="get" action="{% url 'search_users' %}" id="navbar-search-form" class="join">
+            <select id="navbar-search-select" class="select select-bordered join-item bg-slate-800">
+                <option value="users">People</option>
+                <option value="posts">Posts</option>
+            </select>
+            <input type="text" name="query" value="{{ query }}" placeholder="Find People..." class="input input-bordered w-64 bg-slate-800 join-item" id="navbar-search-input" />
         </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const select = document.getElementById('navbar-search-select');
+                const form = document.getElementById('navbar-search-form');
+                const input = document.getElementById('navbar-search-input');
+                const path = window.location.pathname;
+
+                function setSearchType(type) {
+                    select.value = type;
+                    if (type === 'posts') {
+                        form.action = "{% url 'search' %}";
+                        input.placeholder = "Search posts...";
+                    } else {
+                        form.action = "{% url 'search_users' %}";
+                        input.placeholder = "Find People...";
+                    }
+                    localStorage.setItem('navbar-search-preference', type);
+                }
+
+                // Determine initial state
+                let initialType = 'users'; // Default
+                if (path.includes('/search/')) {
+                    initialType = 'posts';
+                } else if (path.includes('/search-users')) {
+                    initialType = 'users';
+                } else {
+                    const stored = localStorage.getItem('navbar-search-preference');
+                    if (stored) {
+                        initialType = stored;
+                    }
+                }
+
+                setSearchType(initialType);
+
+                select.addEventListener('change', function(e) {
+                    setSearchType(e.target.value);
+                });
+            });
+        </script>
     </div>
     <div class="flex-none text-lg">
         {% if user.is_authenticated %}

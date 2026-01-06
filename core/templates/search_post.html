@@ -1,15 +1,26 @@
-{% extends "master.html" %}
+{% extends "master_w_sidebar.html" %}
+{% load widget_tweaks %}
 
 {% block title %}
 Results for: {{ query }}
 {% endblock title %}
 
+{% block sidebar %}
+<div class="flex flex-col gap-4 p-4">
+    <div class="font-bold text-lg">
+        <h3>Filters</h3>
+    </div>
+    <form method="GET" action="{% url 'search' %}">
+    {% include "includes/filters.html" %}
+    </form>
+</div>
+{% endblock sidebar %}
+
 {% block main %}
-<h2>Results for: {{ query }}</h2>
 {% if not results %}
 <p>No results.</p>
 {% else %}
-<div class="flex flex-col gap-4">
+<div class="flex flex-col">
     {% for post in results %}
     {% include "includes/post.html" %}
     {% endfor %}

@@ -1,3 +1,5 @@
+from re import Match
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Value
 from django.shortcuts import get_object_or_404, redirect, render
@@ -40,6 +42,7 @@ def search_users(request):
     query = request.GET.get('query')
 
     in_contacts = request.GET.get('in_contacts')
+    matching_interests = request.GET.get('matching_interests')
     country = request.GET.get('country')
     interests = request.GET.getlist('interests')
 
@@ -47,25 +50,29 @@ def search_users(request):
         user__username__unaccent__icontains=query
     )
 
-    if interests:
-        profiles = profiles.filter(interests__in=interests)
-
     if country:
         profiles = profiles.filter(country=country)
 
-    if in_contacts:
-        profiles = profiles.filter(user__in_contacts_of__user=request.user)
+    if interests:
+        profiles = profiles.filter(interests__in=interests).distinct()
 
-    if request.user.is_authenticated:
+    user = request.user
+    if user.is_authenticated:
+        if in_contacts:
+            profiles = profiles.filter(user__in_contacts_of__user=user)
+
+        if matching_interests:
+            profiles = profiles.filter(
+                interests__in=user.profile.interests.all()
+            ).distinct()
+
         profiles = profiles.annotate(
             is_contact=Exists(
-                Contact.objects.filter(
-                    user=request.user, contact=OuterRef('user')
-                )
+                Contact.objects.filter(user=user, contact=OuterRef('user'))
             ),
             request_sent=Exists(
                 FriendRequest.objects.filter(
-                    sender=request.user,
+                    sender=user,
                     receiver=OuterRef('user'),
                     status=FriendRequest.Status.PENDING,
                 )
@@ -91,8 +98,9 @@ def search_users(request):
     context = {
         "query": query,
         "in_contacts": in_contacts,
-        "selected_interests": selected_interests,
+        "matching_interests": matching_interests,
         "country": country,
+        "selected_interests": selected_interests,
         "user_search_form": user_search_form,
         "user_profile_search_form": user_profile_search_form,
         "interest_categories": interest_categories,
@@ -250,8 +258,13 @@ def accept_friend_request(request, id):
     return render(request, partial, context)
 
 
-def search_post(request):
+def search_posts(request):
     query = request.GET.get('query')
+
+    in_contacts = request.GET.get('in_contacts')
+    matching_interests = request.GET.get('matching_interests')
+    country = request.GET.get('country')
+    interests = request.GET.getlist('interests')
 
     results = filter_visible_posts(
         request,
@@ -259,7 +272,44 @@ def search_post(request):
             '-created_at'
         ),
     )
-    context = {'query': query, 'results': results}
+
+    if country:
+        results = results.filter(user__profile__country=country)
+
+    if interests:
+        results = results.filter(interests__in=interests).distinct()
+
+    user = request.user
+    if user.is_authenticated:
+        if in_contacts:
+            results = results.filter(user__in_contacts_of__user=user)
+
+        if matching_interests:
+            results = results.filter(
+                interests__in=user.profile.interests.all()
+            ).distinct()
+
+    user_profile_search_form = UserProfileSearchForm(request.GET)
+
+    interest_categories = InterestCategory.objects.prefetch_related(
+        'interests'
+    ).all()
+
+    try:
+        selected_interests = [int(i) for i in interests]
+    except ValueError:
+        selected_interests = []
+
+    context = {
+        'query': query,
+        'in_contacts': in_contacts,
+        'matching_interests': matching_interests,
+        'country': country,
+        'selected_interests': selected_interests,
+        'results': results,
+        'user_profile_search_form': user_profile_search_form,
+        'interest_categories': interest_categories,
+    }
     template = 'search_post.html'
     return render(request, template, context)
 

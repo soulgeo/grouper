@@ -51,6 +51,20 @@ class FriendRequest(models.Model):
         return f"Friend request: {self.sender.username} -> {self.receiver.username}"
 
 
+class InterestCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Interest(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(
+        InterestCategory, on_delete=models.CASCADE, related_name="interests"
+    )
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
     user = models.ForeignKey(
@@ -64,6 +78,9 @@ class Post(models.Model):
     visibility = models.CharField(
         max_length=20, choices=Visibility.choices, default=Visibility.PUBLIC
     )
+
+    interests = models.ManyToManyField(Interest, related_name="posts")
+
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="likes"
     )
@@ -101,17 +118,3 @@ class Attachment(models.Model):
     class Meta:
         verbose_name = 'Attachment'
         verbose_name_plural = 'Attachments'
-
-
-class InterestCategory(models.Model):
-    name = models.CharField(max_length=100)
-
-
-class Interest(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(
-        InterestCategory, on_delete=models.CASCADE, related_name="interests"
-    )
-
-    def __str__(self) -> str:
-        return self.name
