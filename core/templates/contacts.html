@@ -6,25 +6,12 @@ Contacts
 
 {% block main %}
 <div class="overflow-x-auto">
-{% if not contacts %}
-<p>You haven't made any contacts yet.</p>
-{% else %}
-<table class="table table-zebra table-lg">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Friends since</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for contact in contacts %}
-        <tr>
-            <td>{{ contact.contact.username }}</td>
-            <td>{{ contact.created_at }}</td>
-        </tr>
+    {% if not profiles %}
+    <p>You haven't made any contacts yet.</p>
+    {% else %}
+    {% for profile in profiles %}
+    {% include "includes/user_card.html" %}
     {% endfor %}
-    </tbody>
-</table>
-{% endif %}
+    {% endif %}
 </div>
 {% endblock main %}

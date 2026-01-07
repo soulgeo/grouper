@@ -5,15 +5,20 @@
     {% if user.is_authenticated %}
     {% if profile.is_contact %}
     <a href="" class="btn btn-ghost">In Contacts</a>
-    {% else %}
-    {% if profile.request_sent %}
+    {% elif profile.request_received %}
+    <form hx-post="{% url 'accept_friend_request' id=profile.request_received_id %}"
+        hx-target="#friend-button-{{ profile.user.id }}" hx-swap="outerHTML">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Accept</button>
+    </form>
+    {% elif profile.request_sent %}
     <div class="btn btn-ghost">Request Sent</div>
     {% else %}
-    <form hx-post="{% url 'send-friend-request' username=profile.user.username %}" hx-target="#friend-button-{{ profile.user.id }}" hx-swap="outerHTML">
+    <form hx-post="{% url 'send-friend-request' username=profile.user.username %}"
+        hx-target="#friend-button-{{ profile.user.id }}" hx-swap="outerHTML">
         {% csrf_token %}
         <button type="submit" class="btn btn-primary">Add Friend</button>
     </form>
-    {% endif %}
     {% endif %}
     {% endif %}
 </div>

@@ -11,22 +11,113 @@ Edit Profile: {{ user.username }}
     <h1>Edit profile</h1>
 </div>
 <div class="divider"></div>
-<div class="flex-1">
-    <form method="post" action="{% url 'edit_profile' %}">
+<div class="flex-1 max-w-4xl mx-auto">
+    <form method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data" class="space-y-6">
         {% csrf_token %}
-        <div class="flex gap-4 form-control">
-            {% render_field user_profile_form.image %}
-            {% render_field user_form.first_name placeholder="First Name" class="input input-bordered"%}
-            {% render_field user_form.last_name placeholder="Last Name" class="input input-bordered"%}
-            {% render_field user_profile_form.bio placeholder="A few things about yourself..." class="textarea textarea-bordered h-32" %}
-            <div class="form-control h-72 border border-base-content/20 rounded-lg overflow-y-auto bg-base-100">
+        
+        <!-- Profile Image -->
+        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+            <h3 class="text-lg font-bold mb-4">Profile Image</h3>
+            <div class="flex items-center gap-6">
+                <div class="avatar">
+                    <div class="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                        <img src="{{ user.profile.image_url }}" alt="Profile picture" class="object-cover" />
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <input type="file" name="image" class="file-input file-input-bordered file-input-primary w-full max-w-xs" accept="image/*" />
+                    {% if user.profile.image %}
+                    <label class="label cursor-pointer justify-start gap-2 p-0">
+                        <input type="checkbox" name="image-clear" class="checkbox checkbox-error checkbox-sm" />
+                        <span class="label-text text-error font-medium">Remove current image</span>
+                    </label>
+                    {% endif %}
+                    {% if user_profile_form.image.errors %}
+                    <div class="text-error text-sm">
+                        {% for error in user_profile_form.image.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+            <h3 class="text-lg font-bold mb-4">Personal Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label"><span class="label-text">First Name</span></label>
+                    {% render_field user_form.first_name class="input input-bordered w-full" placeholder="First Name" %}
+                    {% if user_form.first_name.errors %}
+                    <div class="text-error text-sm mt-1">
+                        {% for error in user_form.first_name.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Last Name</span></label>
+                    {% render_field user_form.last_name class="input input-bordered w-full" placeholder="Last Name" %}
+                    {% if user_form.last_name.errors %}
+                    <div class="text-error text-sm mt-1">
+                        {% for error in user_form.last_name.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Country</span></label>
+                    {% render_field user_profile_form.country class="select select-bordered w-full" %}
+                    {% if user_profile_form.country.errors %}
+                    <div class="text-error text-sm mt-1">
+                        {% for error in user_profile_form.country.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Date of Birth</span></label>
+                    {% render_field user_profile_form.birth_date type="date" class="input input-bordered w-full" %}
+                    {% if user_profile_form.birth_date.errors %}
+                    <div class="text-error text-sm mt-1">
+                        {% for error in user_profile_form.birth_date.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+            <label class="label"><span class="label-text font-bold text-lg">Bio</span></label>
+            {% render_field user_profile_form.bio class="textarea textarea-bordered h-32 w-full" placeholder="Tell us about yourself..." %}
+            {% if user_profile_form.bio.errors %}
+            <div class="text-error text-sm mt-1">
+                {% for error in user_profile_form.bio.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Interests -->
+        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+            <label class="label"><span class="label-text font-bold text-lg">Interests</span></label>
+            <div class="h-72 border border-base-content/20 rounded-lg overflow-y-auto p-4 bg-base-50">
                 {% for category in interest_categories %}
-                <div class="mb-4">
-                    <h3 class="font-bold text-lg sticky top-0 bg-base-100 z-10 py-2 px-4">{{ category.name }}</h3>
-                    <div class="flex flex-col gap-2 px-4">
+                <div class="mb-6 last:mb-0">
+                    <h3 class="font-bold text-md mb-2 text-primary">{{ category.name }}</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                         {% for interest in category.interests.all %}
-                        <label class="label cursor-pointer justify-start gap-2 py-0">
-                            <input type="checkbox" name="interests" value="{{ interest.id }}" class="checkbox checkbox-sm" {% if interest.id in selected_interests %}checked{% endif %} />
+                        <label class="label cursor-pointer justify-start gap-2 hover:bg-base-200 rounded p-1 transition-colors">
+                            <input type="checkbox" name="interests" value="{{ interest.id }}" class="checkbox checkbox-sm checkbox-primary" {% if interest.id in selected_interests %}checked{% endif %} />
                             <span class="label-text">{{ interest.name }}</span>
                         </label>
                         {% endfor %}
@@ -35,7 +126,10 @@ Edit Profile: {{ user.username }}
                 {% endfor %}
             </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-4">Save</button>
+
+        <div class="flex justify-end">
+            <button type="submit" class="btn btn-primary px-8">Save Changes</button>
+        </div>
     </form>
 </div>
 {% endblock main %}

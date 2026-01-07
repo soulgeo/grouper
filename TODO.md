@@ -13,7 +13,8 @@
 - [x] Interests in post creation form
 - [x] Edit posts
 - [x] Display post visibility
-- [ ] Integrate friend requests and contacts in UI
-- [ ] Fix profile image CRUD
+- [x] Integrate friend requests and contacts in UI
+- [x] Fix profile image CRUD
+
 - [ ] Display users who liked a post when clicking on number of likes
 - [ ] Dynamically load posts with HTMX

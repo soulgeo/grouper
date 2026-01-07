@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Value
+from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Subquery, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -11,7 +11,6 @@ from .forms import (
     PostContentForm,
     PostForm,
     UserProfileSearchForm,
-    UserSearchForm,
 )
 from .models import Contact, FriendRequest, InterestCategory, Post, PostContent
 
@@ -91,7 +90,6 @@ def search_users(request):
     interest_categories = InterestCategory.objects.prefetch_related(
         'interests'
     ).all()
-    user_search_form = UserSearchForm(request.GET)
     user_profile_search_form = UserProfileSearchForm(request.GET)
 
     try:
@@ -201,18 +199,64 @@ def edit_profile(request):
 @login_required
 def contacts(request):
     user = request.user
-    contacts = Contact.objects.filter(user=user)
-    context = {'contacts': contacts}
+
+    profiles = UserProfile.objects.filter(user__in_contacts_of__user=user)
+
+    profiles = profiles.annotate(
+        is_contact=Exists(
+            Contact.objects.filter(user=user, contact=OuterRef('user'))
+        ),
+        request_sent=Exists(
+            FriendRequest.objects.filter(
+                sender=user,
+                receiver=OuterRef('user'),
+                status=FriendRequest.Status.PENDING,
+            )
+        ),
+    )
+
+    context = {'profiles': profiles}
     template = 'contacts.html'
     return render(request, template, context)
 
 
 @login_required
 def friend_requests(request):
-    friend_requests = request.user.received_friend_requests.filter(
-        status=FriendRequest.Status.PENDING
+    user = request.user
+
+    profiles = UserProfile.objects.filter(
+        user__sent_friend_requests__receiver=request.user,
+        user__sent_friend_requests__status=FriendRequest.Status.PENDING,
     )
-    context = {'friend_requests': friend_requests}
+
+    profiles = profiles.annotate(
+        is_contact=Exists(
+            Contact.objects.filter(user=user, contact=OuterRef('user'))
+        ),
+        request_sent=Exists(
+            FriendRequest.objects.filter(
+                sender=user,
+                receiver=OuterRef('user'),
+                status=FriendRequest.Status.PENDING,
+            )
+        ),
+        request_received=Exists(
+            FriendRequest.objects.filter(
+                sender=OuterRef('user'),
+                receiver=user,
+                status=FriendRequest.Status.PENDING,
+            )
+        ),
+        request_received_id=Subquery(
+            FriendRequest.objects.filter(
+                sender=OuterRef('user'),
+                receiver=user,
+                status=FriendRequest.Status.PENDING,
+            ).values('id')[:1]
+        ),
+    )
+
+    context = {'profiles': profiles}
     template = 'friend_requests.html'
     return render(request, template, context)
 
@@ -261,8 +305,14 @@ def accept_friend_request(request, id):
     receiver_contact.save()
     friend_request.save()
 
-    context = {"friend_request": friend_request}
-    partial = "friend_requests.html#friend_request"
+    profile = UserProfile.objects.annotate(
+        is_contact=Value(True, output_field=BooleanField()),
+        request_sent=Value(False, output_field=BooleanField()),
+        request_received=Value(False, output_field=BooleanField()),
+    ).get(user=friend_request.sender)
+
+    context = {"profile": profile}
+    partial = "includes/friend_button.html#friend_button"
     return render(request, partial, context)
 
 

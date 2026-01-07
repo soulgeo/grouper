@@ -1,99 +1,117 @@
 <nav>
-<div class="navbar bg-base-300 shadow-sm">
-    <div class="flex-1">
-        <a class="btn btn-ghost text-xl mr-2" href="{% url 'home' %}">Grouper.</a>
-        <form method="get" action="{% url 'search' %}" id="navbar-search-form" class="join">
-            <div class="dropdown join-item">
-                <div tabindex="0" role="button" id="navbar-search-btn" class="btn btn-bordered join-item bg-slate-800 hover:bg-slate-700 border-base-content/20 border-r-0 no-animation flex flex-nowrap gap-1 w-28 justify-between">
-                    Posts
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
+    <div class="navbar bg-base-300 shadow-sm">
+        <div class="flex-1">
+            <a class="btn btn-ghost text-xl mr-2" href="{% url 'home' %}">Grouper.</a>
+            <form method="get" action="{% url 'search' %}" id="navbar-search-form" class="join">
+                <div class="dropdown join-item">
+                    <div tabindex="0" role="button" id="navbar-search-btn"
+                        class="btn btn-bordered join-item bg-slate-800 hover:bg-slate-700 border-base-content/20 border-r-0 no-animation flex flex-nowrap gap-1 w-28 justify-between">
+                        Posts
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <ul tabindex="0"
+                        class="dropdown-content menu bg-base-200 rounded-box z-[100] w-40 p-2 shadow-lg mt-1">
+                        <li><a class="search-type-option" data-type="posts">Posts</a></li>
+                        <li><a class="search-type-option" data-type="users">People</a></li>
+                    </ul>
                 </div>
-                <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[100] w-40 p-2 shadow-lg mt-1">
-                    <li><a class="search-type-option" data-type="posts">Posts</a></li>
-                    <li><a class="search-type-option" data-type="users">People</a></li>
-                </ul>
-            </div>
-            <label class="input input-bordered flex items-center join-item bg-slate-800 w-64 pr-4">
-                <input type="text" name="query" value="{{ query }}" placeholder="Search posts..." class="grow min-w-0 border-none focus:ring-0 bg-transparent p-0" id="navbar-search-input" />
-                <button type="submit" class="flex-none text-neutral-content/70 hover:text-white transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
-            </label>
-        </form>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const form = document.getElementById('navbar-search-form');
-                const input = document.getElementById('navbar-search-input');
-                const searchBtn = document.getElementById('navbar-search-btn');
-                const options = document.querySelectorAll('.search-type-option');
-                const path = window.location.pathname;
+                <label class="input input-bordered flex items-center join-item bg-slate-800 w-64 pr-4">
+                    <input type="text" name="query" value="{{ query }}" placeholder="Search posts..."
+                        class="grow min-w-0 border-none focus:ring-0 bg-transparent p-0" id="navbar-search-input" />
+                    <button type="submit" class="flex-none text-neutral-content/70 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </label>
+            </form>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const form = document.getElementById('navbar-search-form');
+                    const input = document.getElementById('navbar-search-input');
+                    const searchBtn = document.getElementById('navbar-search-btn');
+                    const options = document.querySelectorAll('.search-type-option');
+                    const path = window.location.pathname;
 
-                function setSearchType(type) {
-                    const typeText = type === 'posts' ? 'Posts' : 'People';
-                    searchBtn.innerHTML = `${typeText} <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>`;
-                    
-                    if (type === 'posts') {
-                        form.action = "{% url 'search' %}";
-                        input.placeholder = "Search posts...";
+                    function setSearchType(type) {
+                        const typeText = type === 'posts' ? 'Posts' : 'People';
+                        searchBtn.innerHTML = `${typeText} <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>`;
+
+                        if (type === 'posts') {
+                            form.action = "{% url 'search' %}";
+                            input.placeholder = "Search posts...";
+                        } else {
+                            form.action = "{% url 'search_users' %}";
+                            input.placeholder = "Find People...";
+                        }
+                        localStorage.setItem('navbar-search-preference', type);
+
+                        if (document.activeElement) {
+                            document.activeElement.blur();
+                        }
+                    }
+
+                    // Determine initial state
+                    let initialType = 'posts'; // Default
+                    if (path.includes('/search/')) {
+                        initialType = 'posts';
+                    } else if (path.includes('/search-users')) {
+                        initialType = 'users';
                     } else {
-                        form.action = "{% url 'search_users' %}";
-                        input.placeholder = "Find People...";
+                        const stored = localStorage.getItem('navbar-search-preference');
+                        if (stored) {
+                            initialType = stored;
+                        }
                     }
-                    localStorage.setItem('navbar-search-preference', type);
-                    
-                    if (document.activeElement) {
-                        document.activeElement.blur();
-                    }
-                }
 
-                // Determine initial state
-                let initialType = 'posts'; // Default
-                if (path.includes('/search/')) {
-                    initialType = 'posts';
-                } else if (path.includes('/search-users')) {
-                    initialType = 'users';
-                } else {
-                    const stored = localStorage.getItem('navbar-search-preference');
-                    if (stored) {
-                        initialType = stored;
-                    }
-                }
+                    setSearchType(initialType);
 
-                setSearchType(initialType);
-
-                options.forEach(option => {
-                    option.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        setSearchType(this.getAttribute('data-type'));
+                    options.forEach(option => {
+                        option.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            setSearchType(this.getAttribute('data-type'));
+                        });
                     });
                 });
-            });
-        </script>
-    </div>
-    <div class="flex-none text-lg">
-        {% if user.is_authenticated %}
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-            <div class="w-10 rounded-full">
-                <img alt="{{ user.username }}" src="{{ user.profile.image_url }}" />
-            </div>
-          </div>
-          <ul
-            tabindex="-1"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-            <li><a href="/p/{{ user.username }}">Profile</a></li>
-            <li><a href="{% url 'account_email' %}">Account</a></li>
-            <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
-          </ul>
+            </script>
         </div>
-        {% else %}
-        <a class="btn btn-ghost mr-2" href="{% url 'account_login' %}">SIGN IN</a>
-        <a class="btn btn-ghost" href="{% url 'account_signup' %}">SIGN UP</a>
-        {% endif %}
+        <div class="flex-none text-lg">
+            {% if user.is_authenticated %}
+            <div class="dropdown dropdown-end mr-2">
+                <div tabindex="0" role="button" class="btn btn-neutral btn-circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157Z" />
+                    </svg>
+                </div>
+                <ul tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a href="{% url 'contacts' %}">Contacts</a></li>
+                    <li><a href="{% url 'friend_requests' %}">Friend Requests</a></li>
+                </ul>
+            </div>
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-neutral btn-circle avatar">
+                    <div class="w-10 rounded-full">
+                        <img alt="{{ user.username }}" src="{{ user.profile.image_url }}" />
+                    </div>
+                </div>
+                <ul tabindex="-1"
+                    class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                    <li><a href="/p/{{ user.username }}">Profile</a></li>
+                    <li><a href="{% url 'account_email' %}">Account</a></li>
+                    <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                </ul>
+            </div>
+            {% else %}
+            <a class="btn btn-ghost mr-2" href="{% url 'account_login' %}">SIGN IN</a>
+            <a class="btn btn-ghost" href="{% url 'account_signup' %}">SIGN UP</a>
+            {% endif %}
+        </div>
     </div>
-</div>
 </nav>

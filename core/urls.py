@@ -19,7 +19,7 @@ urlpatterns = [
     path(
         'accept-friend-request/<int:id>',
         views.accept_friend_request,
-        name='accept-friend-request',
+        name='accept_friend_request',
     ),
     path('search-users', views.search_users, name='search_users'),
     path('delete-post/<int:post_id>', views.delete_post, name='delete_post'),

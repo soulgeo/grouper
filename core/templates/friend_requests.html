@@ -8,25 +8,7 @@ Friend Requests
 <div class="font-bold text-xl mb-4">
     <h2>Incoming Friend Requests:</h2>
 </div>
-{% for friend_request in friend_requests %}
-{% partialdef friend_request inline %}
-<div id="friend_request" class="flex flex-row items-center gap-4 justify-between">
-    <div class="flex flex-row items-center gap-4">
-        <div class="avatar flex-none" name="profile-pic">
-            <div class="btn btn-ghost btn-circle w-12 h-12">
-                <a href="/p/{{ friend_request.sender.username }}"><img class="w-full h-full object-cover"
-                        src="{{ friend_request.sender.profile.image_url }}" alt="{{ friend_request.sender.username }}"></a>
-            </div>
-        </div>
-        <a href="/p/{{ friend_request.sender.username }}">{{ friend_request.sender.first_name }} {{ friend_request.sender.last_name }}</a>
-    </div>
-    <div>
-        <form hx-post="{% url 'accept-friend-request' id=friend_request.id %}" hx-target="#friend_request" hx-swap="delete">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Accept</button>
-        </form>
-    </div>
-</div>
-{% endpartialdef %}
+{% for profile in profiles %}
+{% include "includes/user_card.html" %}
 {% endfor %}
 {% endblock main %}
