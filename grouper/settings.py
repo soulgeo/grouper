@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
     'nested_admin',
     'core',
 ]
@@ -128,6 +129,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+SOCIALACCOUNT_ADAPTER = 'users.views.CustomSocialAccountAdapter'
 
 # Django allauth config
 SITE_ID = 1

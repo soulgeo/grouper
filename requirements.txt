@@ -9,7 +9,7 @@ django-template-partials
 mypy-extensions
 typing_extensions
 requests
-jwt
+pyjwt
 psycopg[binary]
 python-dotenv
 django-nested-admin
