@@ -80,9 +80,9 @@
                 });
             </script>
         </div>
-        <div class="flex-none text-lg">
+        <div class="flex-none flex items-center gap-2">
             {% if user.is_authenticated %}
-            <div class="dropdown dropdown-end mr-2">
+            <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-neutral btn-circle">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path
@@ -109,7 +109,7 @@
                 </ul>
             </div>
             {% else %}
-            <a class="btn btn-ghost mr-2" href="{% url 'account_login' %}">SIGN IN</a>
+            <a class="btn btn-ghost" href="{% url 'account_login' %}">SIGN IN</a>
             <a class="btn btn-ghost" href="{% url 'account_signup' %}">SIGN UP</a>
             {% endif %}
         </div>

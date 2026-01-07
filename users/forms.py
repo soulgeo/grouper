@@ -22,9 +22,10 @@ class SignupForm(forms.Form):
         user.last_name = self.cleaned_data['last_name']
         user.save()
 
-        profile = UserProfile(user=user)
-        profile.country = self.cleaned_data.get('country', '')
-        profile.save()
+        UserProfile.objects.update_or_create(
+            user=user,
+            defaults={'country': self.cleaned_data.get('country', '')},
+        )
 
 
 class UserForm(forms.ModelForm):

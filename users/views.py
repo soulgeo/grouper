@@ -35,6 +35,5 @@ class CustomSignupView(SignupView):
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
-        profile = UserProfile(user=user)
-        profile.save()
+        UserProfile.objects.get_or_create(user=user)
         return user
