@@ -1,0 +1,31 @@
+{% extends "master_w_sidebar.html" %}
+
+{% block title %}
+{{ room.name }}
+{% endblock title %}
+
+{% block main %}
+<div hx-ext="ws" ws-connect="/ws/chatroom/{{ room.id }}" class="flex flex-col h-[calc(100vh-180px)]">
+    <ul id="chat_messages" class="flex-grow overflow-y-auto pr-2 mb-4">
+        {% for message in room.messages.all reversed %}
+        {% include "includes/chat_message.html" %}
+        {% endfor %}
+    </ul>
+    <div class="w-full bg-base-100 py-2">
+        <form id="form" ws-send 
+            hx-on:htmx:ws-after-send="this.reset(); scrollToBottom()" 
+            hx-on:submit="setTimeout(() => this.reset(), 10)"
+            class="flex gap-2">
+            <input type="text" name="body" class="input input-bordered flex-grow" placeholder="Type a message..." autofocus>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</div>
+<script>
+    function scrollToBottom() {
+        const container = document.getElementById('chat_messages');
+        container.scrollTop = container.scrollHeight;
+    }
+    scrollToBottom();
+</script>
+{% endblock main %}

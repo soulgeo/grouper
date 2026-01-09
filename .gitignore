@@ -140,3 +140,4 @@ GitHub.sublime-settings
 node_modules/
 /static/css/output.css
 /static/src/htmx.min.js
+/static/src/ws.js
