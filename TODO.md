@@ -2,7 +2,7 @@
 
 ### Features
 
-- [ ] Facebook & Google auth
+- [x] Facebook & Google auth
 - [ ] Chat
 - [ ] Notifications
 - [ ] Groups
