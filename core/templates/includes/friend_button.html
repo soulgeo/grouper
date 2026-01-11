@@ -4,7 +4,14 @@
 <div id="friend-button-{{ profile.user.id }}">
     {% if user.is_authenticated %}
     {% if profile.is_contact %}
-    <a href="" class="btn btn-ghost">In Contacts</a>
+    <div class="dropdown join-item">
+        <div tabindex="0" role="button" class="btn btn-ghost join-item">
+            In Contacts
+        </div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-40 p-2 shadow-lg mt-1">
+            <li><a href="{% url 'chat_contact' user_id=profile.user.id %}">Message</a></li>
+        </ul>
+    </div>
     {% elif profile.request_received %}
     <form hx-post="{% url 'accept_friend_request' id=profile.request_received_id %}"
         hx-target="#friend-button-{{ profile.user.id }}" hx-swap="outerHTML">

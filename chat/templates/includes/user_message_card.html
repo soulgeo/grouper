@@ -1,0 +1,19 @@
+{% load partials %}
+{% load static %}
+
+{% partialdef user_partial inline=true %}
+<div id="user-{{ profile.user.id }}">
+    <div hx-get="{% url 'chat_contact' user_id=profile.user.id %}" hx-target="#chat_room" class="btn btn-ghost flex flex-row gap-4 p-4 rounded-lg h-full justify-start">
+        <div class="avatar flex-none" name="profile-pic">
+            <div class="rounded-full w-12 h-12">
+                <img class="w-full h-full object-cover" src="{{ profile.image_url }}" alt="{{ profile.user.username }}">
+            </div>
+        </div>
+        <div name="user">
+            <div class="text-lg">
+                {{ profile.user.first_name}} {{ profile.user.last_name }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endpartialdef user_partial %}

@@ -4,28 +4,21 @@
 {{ room.name }}
 {% endblock title %}
 
+{% block sidebar %}
+{% for profile in profiles %}
+{% include "includes/user_message_card.html" %}
+{% endfor %}
+{% endblock sidebar %}
+
 {% block main %}
-<div hx-ext="ws" ws-connect="/ws/chatroom/{{ room.id }}" class="flex flex-col h-[calc(100vh-180px)]">
-    <ul id="chat_messages" class="flex-grow overflow-y-auto pr-2 mb-4">
-        {% for message in room.messages.all reversed %}
-        {% include "includes/chat_message.html" %}
-        {% endfor %}
-    </ul>
-    <div class="w-full bg-base-100 py-2">
-        <form id="form" ws-send 
-            hx-on:htmx:ws-after-send="this.reset(); scrollToBottom()" 
-            hx-on:submit="setTimeout(() => this.reset(), 10)"
-            class="flex gap-2">
-            <input type="text" name="body" class="input input-bordered flex-grow" placeholder="Type a message..." autofocus>
-            <button type="submit" class="btn btn-primary">Send</button>
-        </form>
+<div id="chat_room">
+    <div class="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] text-base-content/50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mb-4 opacity-20" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd"
+                d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97Z"
+                clip-rule="evenodd" />
+        </svg>
+        <p class="text-xl font-semibold">Pick someone to chat with.</p>
     </div>
 </div>
-<script>
-    function scrollToBottom() {
-        const container = document.getElementById('chat_messages');
-        container.scrollTop = container.scrollHeight;
-    }
-    scrollToBottom();
-</script>
 {% endblock main %}

@@ -1,11 +1,20 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class ChatRoom(models.Model):
     name = models.CharField(max_length=100, unique=True)
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="chat_rooms"
+    )
+
+    class ChatType(models.TextChoices):
+        CONTACTS = 'Contacts', _('Contacts')
+        GROUP_CHAT = 'GroupChat', _('GroupChat')
+
+    chat_type = models.TextField(
+        max_length=20, choices=ChatType.choices, default=ChatType.CONTACTS
     )
 
     def __str__(self) -> str:
