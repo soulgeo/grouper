@@ -1,6 +1,7 @@
+from django.db.models import F, OuterRef, Subquery
 from django.shortcuts import redirect, render
 
-from chat.models import ChatRoom
+from chat.models import ChatMessage, ChatRoom
 from users.models import User, UserProfile
 
 
@@ -13,7 +14,22 @@ def chat_room(request, room_id):
 
 def chat_home(request):
     user = request.user
-    profiles = UserProfile.objects.filter(user__in_contacts_of__user=user)
+
+    latest_message = (
+        ChatMessage.objects.filter(
+            room__chat_type=ChatRoom.ChatType.CONTACTS,
+            room__users=user,
+        )
+        .filter(room__users=OuterRef('user'))
+        .order_by('-created_at')
+        .values('created_at')[:1]
+    )
+
+    profiles = (
+        UserProfile.objects.filter(user__in_contacts_of__user=user)
+        .annotate(latest_message_at=Subquery(latest_message))
+        .order_by(F('latest_message_at').desc(nulls_last=True))
+    )
 
     room = None
 
