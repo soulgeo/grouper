@@ -1,4 +1,5 @@
-from django.db.models import F, OuterRef, Subquery
+from django.db.models import Case, CharField, F, OuterRef, Subquery, Value, When
+from django.db.models.functions import Concat
 from django.shortcuts import redirect, render
 
 from chat.models import ChatMessage, ChatRoom
@@ -17,37 +18,71 @@ def chat_home(request):
 
     latest_message = (
         ChatMessage.objects.filter(
-            room__chat_type=ChatRoom.ChatType.CONTACTS,
-            room__users=user,
+            room=OuterRef('pk'),
         )
-        .filter(room__users=OuterRef('user'))
         .order_by('-created_at')
         .values('created_at')[:1]
     )
 
-    profiles = (
-        UserProfile.objects.filter(user__in_contacts_of__user=user)
+    profile_qs = UserProfile.objects.filter(
+        user__chat_rooms=OuterRef('pk')
+    ).exclude(user=user)
+
+    rooms = (
+        ChatRoom.objects.filter(users=user)
         .annotate(latest_message_at=Subquery(latest_message))
+        .annotate(
+            display_profile_image=Case(
+                When(
+                    chat_type=ChatRoom.ChatType.CONTACTS,
+                    then=Subquery(profile_qs.values('image')[:1]),
+                ),
+                default=Value(None),
+                output_field=CharField(),
+            ),
+            display_full_name=Case(
+                When(
+                    chat_type=ChatRoom.ChatType.CONTACTS,
+                    then=Subquery(
+                        profile_qs.annotate(
+                            full_name=Concat(
+                                'user__first_name',
+                                Value(' '),
+                                'user__last_name',
+                            )
+                        ).values('full_name')[:1]
+                    ),
+                ),
+                default=Value(None),
+                output_field=CharField(),
+            ),
+        )
+        .annotate(
+            display_name=Case(
+                When(chat_type=ChatRoom.ChatType.GROUP_CHAT, then=F('name')),
+                default=F('display_full_name'),
+                output_field=CharField(),
+            )
+        )
         .order_by(F('latest_message_at').desc(nulls_last=True))
     )
 
-    room = None
+    active_room = None
 
     target_user_id = request.GET.get('user_id')
     if target_user_id:
-        contact_user = [User.objects.get(id=target_user_id)]
-        user = [user]
-        room, created = ChatRoom.objects.filter(
-            chat_type=ChatRoom.ChatType.CONTACTS, users__in=user
-        ).get_or_create(users__in=contact_user)
+        contact_user = User.objects.get(id=target_user_id)
+        active_room, created = ChatRoom.objects.filter(
+            chat_type=ChatRoom.ChatType.CONTACTS, users=user
+        ).get_or_create(users=contact_user)
         if created:
-            room_name = f"{user[0].username}_{contact_user[0].username}"
-            room.name = room_name
-            room.save()
-            room.users.set(user + contact_user)
+            room_name = f"{user.username}_{contact_user.username}"
+            active_room.name = room_name
+            active_room.save()
+            active_room.users.set(user + contact_user)
 
     template = 'chat.html'
-    context = {'profiles': profiles, 'room': room}
+    context = {'rooms': rooms, 'active_room': active_room}
     return render(request, template, context)
 
 

@@ -5,14 +5,14 @@
 {% endblock title %}
 
 {% block sidebar %}
-{% for profile in profiles %}
+{% for room in rooms %}
 {% include "includes/user_message_card.html" %}
 {% endfor %}
 {% endblock sidebar %}
 
 {% block main %}
 <div id="chat_room">
-{% if not room %}
+{% if not active_room %}
     <div class="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] text-base-content/50">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mb-4 opacity-20" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd"
@@ -22,7 +22,7 @@
         <p class="text-xl font-semibold">Pick someone to chat with.</p>
     </div>
 {% else %}
-{% include "includes/chat_room.html" %}
+{% include "includes/chat_room.html" with room=active_room %}
 {% endif %}
 </div>
 {% endblock main %}

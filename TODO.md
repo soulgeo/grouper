@@ -5,13 +5,18 @@
 - [x] Facebook & Google auth
 - [ ] Chat
 - [ ] Notifications
-- [ ] Groups
-- [ ] Form Messages
+
+### Optional
+
+- [ ] Post comments
 
 ### Small Adds/Fixes
 
-- [ ] UI: Access to chat app
-- [ ] Display available chatrooms on chat sidebar
+- [x] UI: Access to chat app
+- [x] Display available chatrooms on chat sidebar
+- [ ] Group Chats
+- [ ] Chat popup windows
 
+- [ ] Form Messages
 - [ ] Display users who liked a post when clicking on number of likes
-- [ ] Dynamically load posts with HTMX
+- [ ] Dynamically load posts on scroll with HTMX
