@@ -7,9 +7,10 @@ from users.models import User, UserProfile
 
 
 def chat_room(request, room_id):
-    room = ChatRoom.objects.get(id=room_id)
+    rooms = ChatRoom.objects.filter(users=request.user)
+    selected_room = ChatRoom.objects.get(id=room_id)
     partial = 'includes/chat_room.html'
-    context = {'room': room}
+    context = {'rooms': rooms, 'selected_room': selected_room}
     return render(request, partial, context)
 
 
@@ -20,17 +21,30 @@ def chat_home(request):
         ChatMessage.objects.filter(
             room=OuterRef('pk'),
         )
+        .annotate(
+            message_str=Concat(
+                Value('@'),
+                F('author__username'),
+                Value(': '),
+                F('body'),
+                output_field=CharField(),
+            )
+        )
         .order_by('-created_at')
-        .values('created_at')[:1]
     )
 
-    profile_qs = UserProfile.objects.filter(
-        user__chat_rooms=OuterRef('pk')
-    ).exclude(user=user)
+    profile_qs = (
+        UserProfile.objects.filter(
+            user__chat_rooms=OuterRef('pk')
+        ).exclude(user=user)
+    )
 
     rooms = (
         ChatRoom.objects.filter(users=user)
-        .annotate(latest_message_at=Subquery(latest_message))
+        .annotate(
+            latest_message=Subquery(latest_message.values('message_str')[:1]),
+            latest_message_at=Subquery(latest_message.values('created_at')[:1])
+        )
         .annotate(
             display_profile_image=Case(
                 When(

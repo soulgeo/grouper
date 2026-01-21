@@ -42,7 +42,7 @@ class ChatMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return f"{self.author}: {self.body}"
+        return f"@{self.author.username}: {self.body}"
 
     class Meta:
         ordering = ["-created_at"]

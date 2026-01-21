@@ -10,6 +10,8 @@ services:
       db:
         condition: service_healthy
         restart: true
+    environment:
+      - DB_HOST=db
     env_file:
       - .env
   tailwind:

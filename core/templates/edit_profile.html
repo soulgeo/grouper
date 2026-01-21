@@ -16,11 +16,11 @@ Edit Profile: {{ user.username }}
         {% csrf_token %}
         
         <!-- Profile Image -->
-        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
             <h3 class="text-lg font-bold mb-4">Profile Image</h3>
             <div class="flex items-center gap-6">
                 <div class="avatar">
-                    <div class="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                    <div class="w-24 h-24 rounded-full ring ring-primary ring-offset-base-200 ring-offset-2">
                         <img src="{{ user.profile.image_url }}" alt="Profile picture" class="object-cover" />
                     </div>
                 </div>
@@ -44,7 +44,7 @@ Edit Profile: {{ user.username }}
         </div>
 
         <!-- Personal Information -->
-        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
             <h3 class="text-lg font-bold mb-4">Personal Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-control">
@@ -95,7 +95,7 @@ Edit Profile: {{ user.username }}
         </div>
 
         <!-- Bio -->
-        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
             <label class="label"><span class="label-text font-bold text-lg">Bio</span></label>
             {% render_field user_profile_form.bio class="textarea textarea-bordered h-32 w-full" placeholder="Tell us about yourself..." %}
             {% if user_profile_form.bio.errors %}
@@ -108,7 +108,7 @@ Edit Profile: {{ user.username }}
         </div>
 
         <!-- Interests -->
-        <div class="form-control bg-base-100 p-6 rounded-xl border border-base-200">
+        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
             <label class="label"><span class="label-text font-bold text-lg">Interests</span></label>
             <div class="h-72 border border-base-content/20 rounded-lg overflow-y-auto p-4 bg-base-50">
                 {% for category in interest_categories %}

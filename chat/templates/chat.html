@@ -5,14 +5,20 @@
 {% endblock title %}
 
 {% block sidebar %}
-{% for room in rooms %}
-{% include "includes/user_message_card.html" %}
-{% endfor %}
+<div id="rooms">
+    {% for room in rooms %}
+    {% include "includes/user_message_card.html" %}
+    {% endfor %}
+</div>
 {% endblock sidebar %}
 
 {% block main %}
 <div id="chat_room">
-{% if not active_room %}
+    {% for room in rooms %}
+    <div hx-ext="ws" ws-connect="/ws/chatroom/{{ room.id }}" id="messages_room_{{ room.id }}">
+    </div>
+    {% endfor %}
+<!-- {% if not active_room %} -->
     <div class="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] text-base-content/50">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mb-4 opacity-20" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd"
@@ -21,9 +27,9 @@
         </svg>
         <p class="text-xl font-semibold">Pick someone to chat with.</p>
     </div>
-{% else %}
-{% include "includes/chat_room.html" with room=active_room %}
-{% endif %}
+<!-- {% else %} -->
+<!-- {% include "includes/chat_room.html" with room=active_room %} -->
+<!-- {% endif %} -->
 </div>
 {% endblock main %}
 
