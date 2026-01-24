@@ -423,7 +423,6 @@ def create_post(request):
     return render(request, partial, context)
 
 
-@login_required
 def delete_post(request, post_id):
     if not request.method == 'POST':
         return redirect('/accounts/')  # TODO: Change Redirect
@@ -466,9 +465,9 @@ def edit_post(request, post_id):
             'hx_swap': 'outerHTML',
             'hide_trigger': True,
         }
-        return render(request, 'includes/post_form.html', context)
+        template = 'includes/post_form.html'
+        return render(request, template, context)
 
-    # POST
     if not request.method == 'POST':
         return redirect('/accounts/')  # TODO: Change Redirect
 

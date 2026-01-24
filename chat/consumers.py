@@ -2,12 +2,10 @@ import json
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from django.db.models import Value
-from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 
-from users.models import User, UserProfile
+from users.models import UserProfile
 
 from .models import ChatMessage, ChatRoom
 

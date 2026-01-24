@@ -1,9 +1,9 @@
 {% load partials %}
 {% load static %}
 
-{% partialdef user_partial inline=true %}
+{% partialdef chat_room_card inline=true %}
 <div id="room-{{ room.id }}">
-    <div hx-get="{% url 'chatroom' room_id=room.id %}" hx-target="#chat_room" hx-swap="innerHTML" class="btn btn-ghost flex flex-row gap-4 p-4 rounded-lg h-full justify-start">
+    <div hx-get="{% url 'chatroom' room_id=room.id %}" hx-target="#messages_room_{{ room.id }}" hx-swap="innerHTML" class="btn btn-ghost flex flex-row gap-4 p-4 rounded-lg h-full justify-start">
         <div class="avatar flex-none" name="profile-pic">
             <div class="rounded-full w-12 h-12">
                 {% if room.chat_type == room.ChatType.CONTACTS %}
@@ -28,4 +28,4 @@
         </div>
     </div>
 </div>
-{% endpartialdef user_partial %}
+{% endpartialdef chat_room_card %}

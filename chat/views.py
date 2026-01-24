@@ -1,85 +1,30 @@
-from django.db.models import Case, CharField, F, OuterRef, Subquery, Value, When
-from django.db.models.functions import Concat
 from django.shortcuts import redirect, render
 
-from chat.models import ChatMessage, ChatRoom
+from chat.forms import ChatForm
+from chat.models import ChatRoom
 from users.models import User, UserProfile
 
 
 def chat_room(request, room_id):
+    print(f"In chat_room view. room_id: {room_id}")
     rooms = ChatRoom.objects.filter(users=request.user)
     selected_room = ChatRoom.objects.get(id=room_id)
-    partial = 'includes/chat_room.html'
+
+    if (
+        request.headers.get('HX-Request')
+        and request.headers.get('HX-Target') == 'chat_room'
+    ):
+        template = 'includes/chat_room_container.html'
+    else:
+        template = 'includes/chat_room.html'
+
     context = {'rooms': rooms, 'selected_room': selected_room}
-    return render(request, partial, context)
+    return render(request, template, context)
 
 
 def chat_home(request):
     user = request.user
-
-    latest_message = (
-        ChatMessage.objects.filter(
-            room=OuterRef('pk'),
-        )
-        .annotate(
-            message_str=Concat(
-                Value('@'),
-                F('author__username'),
-                Value(': '),
-                F('body'),
-                output_field=CharField(),
-            )
-        )
-        .order_by('-created_at')
-    )
-
-    profile_qs = (
-        UserProfile.objects.filter(
-            user__chat_rooms=OuterRef('pk')
-        ).exclude(user=user)
-    )
-
-    rooms = (
-        ChatRoom.objects.filter(users=user)
-        .annotate(
-            latest_message=Subquery(latest_message.values('message_str')[:1]),
-            latest_message_at=Subquery(latest_message.values('created_at')[:1])
-        )
-        .annotate(
-            display_profile_image=Case(
-                When(
-                    chat_type=ChatRoom.ChatType.CONTACTS,
-                    then=Subquery(profile_qs.values('image')[:1]),
-                ),
-                default=Value(None),
-                output_field=CharField(),
-            ),
-            display_full_name=Case(
-                When(
-                    chat_type=ChatRoom.ChatType.CONTACTS,
-                    then=Subquery(
-                        profile_qs.annotate(
-                            full_name=Concat(
-                                'user__first_name',
-                                Value(' '),
-                                'user__last_name',
-                            )
-                        ).values('full_name')[:1]
-                    ),
-                ),
-                default=Value(None),
-                output_field=CharField(),
-            ),
-        )
-        .annotate(
-            display_name=Case(
-                When(chat_type=ChatRoom.ChatType.GROUP_CHAT, then=F('name')),
-                default=F('display_full_name'),
-                output_field=CharField(),
-            )
-        )
-        .order_by(F('latest_message_at').desc(nulls_last=True))
-    )
+    rooms = ChatRoom.objects.with_rich_data(user)  # type: ignore
 
     active_room = None
 
@@ -93,23 +38,68 @@ def chat_home(request):
             room_name = f"{user.username}_{contact_user.username}"
             active_room.name = room_name
             active_room.save()
-            active_room.users.set(user + contact_user)
+            active_room.users.set([user, contact_user])
+
+    friend_profiles = UserProfile.objects.filter(
+        user__in_contacts_of__user=user
+    )
 
     template = 'chat.html'
-    context = {'rooms': rooms, 'active_room': active_room}
+    context = {
+        'chat_form': ChatForm(),
+        'rooms': rooms,
+        'active_room': active_room,
+        'friend_profiles': friend_profiles,
+    }
     return render(request, template, context)
 
 
 def chat_contact(request, user_id):
-    user = [request.user]
-    contact_user = [User.objects.get(id=user_id)]
-    room, created = ChatRoom.objects.filter(
-        chat_type=ChatRoom.ChatType.CONTACTS, users__in=user
-    ).get_or_create(users__in=contact_user)
-    if created:
-        room_name = f"{user[0].username}_{contact_user[0].username}"
-        room.name = room_name
-        room.save()
-        room.users.set(user + contact_user)
+    user = request.user
+    contact_user = User.objects.get(id=user_id)
+    room = (
+        ChatRoom.objects.filter(
+            chat_type=ChatRoom.ChatType.CONTACTS, users=user
+        )
+        .filter(users=contact_user)
+        .first()
+    )
+
+    if not room:
+        room = ChatRoom.objects.create(
+            chat_type=ChatRoom.ChatType.CONTACTS,
+            name=f"{user.username}_{contact_user.username}",
+        )
+        room.users.set([user, contact_user])
 
     return redirect('chatroom', room_id=room.id)  # type: ignore
+
+
+def create_chat_room(request):
+    if request.method != "POST":
+        return redirect("/accounts/")
+
+    chat_form = ChatForm(request.POST, request.FILES)
+    users = request.POST.getlist('contacts')
+    users.append(str(request.user.id))
+
+    if not chat_form.is_valid():
+        print('Form errors:', chat_form.errors)
+        return redirect('/')
+
+    chat_room_instance = chat_form.save(commit=False)
+    chat_room_instance.chat_type = ChatRoom.ChatType.GROUP_CHAT
+    chat_room_instance.save()
+    chat_room_instance.users.set(users)
+
+    rich_room = ChatRoom.objects.with_rich_data(request.user).get(  # type: ignore
+        id=chat_room_instance.id
+    )
+
+    context = {
+        'room': rich_room,
+        'selected_room': rich_room,
+        'rooms': ChatRoom.objects.filter(users=request.user),
+    }
+
+    return render(request, 'includes/chat_room_container.html', context)

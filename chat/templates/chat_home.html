@@ -5,9 +5,9 @@ Chat
 {% endblock title %}
 
 {% block main %}
-<div>
-    {% for profile in profiles %}
-    {% include "includes/user_message_card.html" %}
-    {% endfor %}
-</div>
+        <div id="rooms">
+            {% for room in rooms %}
+            {% include "includes/chat_room_card.html" %}
+            {% endfor %}
+        </div>
 {% endblock main %}

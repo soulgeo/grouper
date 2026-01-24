@@ -4,8 +4,7 @@
     </div>
     <script>scrollToBottom_{{ room.id }}()</script>
 </div>
-<div id="room-{{ room.id }}" hx-swap-oob="delete">
-</div>
+<div id="room-{{ room.id }}" hx-swap-oob="delete"></div>
 <div id="rooms" hx-swap-oob="afterbegin">
-    {% include "includes/user_message_card.html" %}
+    {% include "includes/chat_room_card.html" %}
 </div>

@@ -4,7 +4,6 @@
 {% with modal_id=modal_id|default:"post_modal" %}
 
 {% if not hide_trigger %}
-<!-- Trigger for the Post Modal -->
 <div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-sm cursor-pointer hover:bg-base-300 transition-colors duration-200" onclick="{{ modal_id }}.showModal()">
     <a href="/p/{{ user.username }}" class="btn btn-ghost btn-circle avatar flex-none" onclick="event.stopPropagation()">
         <div class="w-10 rounded-full overflow-hidden">
@@ -19,11 +18,10 @@
 </div>
 {% endif %}
 
-<!-- Post Modal -->
 <dialog id="{{ modal_id }}" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
         <form method="dialog">
-            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 focus:outline-none">✕</button>
         </form>
         <h3 class="font-bold text-lg mb-4 text-center">{{ form_title|default:"Create Post" }}</h3>
 
@@ -36,17 +34,13 @@
                 </div>
             </div>
             <div class="flex flex-col w-full">
-                <!-- 
-                     hx-on::after-request="this.reset(); updateVisibility('Public', 'Public'); post_modal.close()" 
-                     ensures the form resets, the visibility label resets, and the modal closes after submission 
-                -->
                 <form hx-post="{{ post_url|default:'/submit-post' }}" hx-target="{{ hx_target|default:'#posts-body' }}" hx-swap="{{ hx_swap|default:'afterbegin' }}"
                     hx-on::after-request="this.reset(); updateVisibility(this, 'Public', 'Public'); {{ modal_id }}.close()">
                     {% csrf_token %}
                     <div class="flex flex-col md:flex-row gap-4">
                         <div class="flex flex-col w-full gap-4 form-control">
                             <div class="font-bold form-control w-full">
-                                {% render_field post_form.title placeholder="Title..." class="input input-bordered focus:outline-none" %}
+                                {% render_field post_form.title placeholder="Title..." class="input input-bordered focus:outline-none" autofocus="true" %}
                             </div>
                             {% render_field post_content_form.text placeholder="Share something..." class="textarea textarea-bordered h-48 focus:outline-none text-lg resize-none" %}
                             
@@ -71,13 +65,10 @@
 
                             <script>
                                 function updateVisibility(element, value, label) {
-                                    // element is either the form (on reset) or the anchor tag (on click)
-                                    // If it's the form, we need to find the input within it.
                                     let container = element.closest('form');
                                     if (!container) return;
 
                                     const input = container.querySelector('[name="visibility"]');
-                                    // Find the label span. We look for the span inside the trigger button which is in the same container.
                                     const trigger = container.querySelector('[id$="_visibility-trigger"]');
                                     const labelSpan = trigger ? trigger.querySelector('span') : null;
 

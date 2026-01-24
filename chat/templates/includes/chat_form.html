@@ -1,0 +1,72 @@
+{% load static %}
+{% load widget_tweaks %}
+
+{% with modal_id=modal_id|default:"chat_modal" %}
+
+<button class="btn btn-ghost w-full text-2xl" onclick="{{ modal_id }}.showModal()">+</button>
+
+<dialog id="{{ modal_id }}" class="modal">
+    <div class="modal-box w-11/12">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 focus:outline-none">✕</button>
+        </form>
+        <h3 class="font-bold text-lg mb-4 text-center">{{ form_title|default:"Create Group Chat" }}</h3>
+        <form hx-post="{{ chat_url|default:'room/' }}" 
+              hx-target="#chat_room" 
+              hx-swap="afterbegin" 
+              hx-on::after-request="this.reset(); {{ modal_id }}.close()">
+            <div class="flex flex-col gap-4">
+                {% csrf_token %}
+                <div class="form-control px-2 py-4 rounded-xl">
+                    <div class="flex items-center gap-6">
+                        <div class="avatar">
+                            <div class="w-24 h-24 rounded-full ring ring-primary ring-offset-base-200 ring-offset-2">
+                                {% static 'src/img/group_default.png' as default_img %}
+                                <img src="{{ room.image_url|default:default_img }}" alt="Chat image" class="object-cover" />
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <input type="file" name="image" class="file-input file-input-bordered file-input-primary w-full max-w-xs" accept="image/*" />
+                            {% if room.image %}
+                            <label class="label cursor-pointer justify-start gap-2 p-0">
+                                <input type="checkbox" name="image-clear" class="checkbox checkbox-error checkbox-sm" />
+                                <span class="label-text text-error font-medium">Remove current image</span>
+                            </label>
+                            {% endif %}
+                            {% if chat_form.image.errors %}
+                            <div class="text-error text-sm">
+                                {% for error in chat_form.image.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="font-bold form-control w-full">
+                    {% render_field chat_form.name placeholder="Name..." class="input input-bordered focus:outline-none" autofocus="true" %}
+                </div>
+                <div class="flex flex-col border border-base-content/20 rounded-lg h-48 md:h-64 overflow-y-auto w-full p-2">
+                    {% for profile in friend_profiles %}
+                    <div class="flex flex-row items-center w-full">
+                        <label class="label cursor-pointer justify-start gap-2 py-1 hover:bg-base-200 rounded-md px-4 -mx-1 transition-colors w-full">
+                            <div class="avatar flex-none">
+                                <div class="rounded-full w-12 h-12">
+                                    <img src="{{ profile.image_url }}" alt="{{ profile.user.username }}" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                            <div class="flex flex-row w-full items-center justify-between">
+                                <span class="label-text text-md">{{ profile.user.username }}</span>
+                                <input type="checkbox" name="contacts" value="{{ profile.user.id }}" class="checkbox checkbox-xs" {% if profile.user.id in selected_profiles %}checked{% endif %} />
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+{% endwith %}
