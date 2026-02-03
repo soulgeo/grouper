@@ -7,13 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% block title %}{% endblock title%}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'src/img/favicon.png' %}">
     <meta name="description" content="{% block description %}Grouper - Connect with people who share your interests.{% endblock description %}">
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <script src="{% static 'src/htmx.min.js' %}"></script>
     <script src="{% static 'src/ws.js' %}"></script>
 </head>
 
-<body>
+<body hx-ext="ws" ws-connect="/ws/notifications/">
     <div class="m-0 fixed w-full top-0 left-0 z-10">
         {% include "navbar.html" %}
     </div>

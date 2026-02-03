@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'nested_admin',
     'core',
+    'notifications',
 ]
 
 MIDDLEWARE = [

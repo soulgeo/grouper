@@ -12,7 +12,7 @@ from .forms import (
     PostForm,
     UserProfileSearchForm,
 )
-from .models import Contact, FriendRequest, InterestCategory, Post, PostContent
+from .models import Contact, FriendRequest, InterestCategory, Like, Post, PostContent
 
 
 def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
@@ -379,11 +379,11 @@ def like_post(request, post_id):
 
     post = Post.objects.get(id=post_id)
 
-    if request.user in post.likes.all():
-        post.likes.remove(request.user)
-
+    like = Like.objects.filter(post=post, user=request.user).first()
+    if like:
+        like.delete()
     else:
-        post.likes.add(request.user)
+        Like.objects.create(post=post, user=request.user)
 
     post.save()
     context = {'post': post}

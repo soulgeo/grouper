@@ -27,6 +27,7 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(
             self.chatroom.name, self.channel_name
         )
+        return super().disconnect(code)
 
     def receive(self, text_data=None, bytes_data=None):
         if not text_data:
@@ -41,11 +42,11 @@ class ChatConsumer(WebsocketConsumer):
 
         async_to_sync(self.channel_layer.group_send)(
             self.chatroom.name,
-            {"type": "chat.message", "message": message},
+            {'type': 'chat.message', 'message': message},
         )
 
     def chat_message(self, event):
-        message = event["message"]
+        message = event['message']
         
         self.chatroom.latest_message = message  # type: ignore
 
@@ -59,13 +60,13 @@ class ChatConsumer(WebsocketConsumer):
             )
             if other_profile:
                 self.chatroom.display_name = (  # type: ignore
-                    f"{other_profile.user.first_name} {other_profile.user.last_name}"
+                    f'{other_profile.user.first_name} {other_profile.user.last_name}'
                 )
                 self.chatroom.display_profile_image = (  # type: ignore
                     other_profile.image.url if other_profile.image else None
                 )
             else:
-                self.chatroom.display_name = "Unknown"  # type: ignore
+                self.chatroom.display_name = 'Unknown'  # type: ignore
                 self.chatroom.display_profile_image = None  # type: ignore
 
         html = get_template('includes/chat_message_oob.html').render(

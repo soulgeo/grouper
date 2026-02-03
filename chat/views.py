@@ -6,7 +6,7 @@ from users.models import User, UserProfile
 
 
 def chat_room(request, room_id):
-    print(f"In chat_room view. room_id: {room_id}")
+    print(f'In chat_room view. room_id: {room_id}')
     rooms = ChatRoom.objects.filter(users=request.user)
     selected_room = ChatRoom.objects.get(id=room_id)
 
@@ -35,7 +35,7 @@ def chat_home(request):
             chat_type=ChatRoom.ChatType.CONTACTS, users=user
         ).get_or_create(users=contact_user)
         if created:
-            room_name = f"{user.username}_{contact_user.username}"
+            room_name = f'{user.username}_{contact_user.username}'
             active_room.name = room_name
             active_room.save()
             active_room.users.set([user, contact_user])
@@ -68,7 +68,7 @@ def chat_contact(request, user_id):
     if not room:
         room = ChatRoom.objects.create(
             chat_type=ChatRoom.ChatType.CONTACTS,
-            name=f"{user.username}_{contact_user.username}",
+            name=f'{user.username}_{contact_user.username}',
         )
         room.users.set([user, contact_user])
 
@@ -76,8 +76,8 @@ def chat_contact(request, user_id):
 
 
 def create_chat_room(request):
-    if request.method != "POST":
-        return redirect("/accounts/")
+    if request.method != 'POST':
+        return redirect('/accounts/')
 
     chat_form = ChatForm(request.POST, request.FILES)
     users = request.POST.getlist('contacts')

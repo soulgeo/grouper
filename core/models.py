@@ -24,7 +24,7 @@ class Contact(models.Model):
         unique_together = ('user', 'contact')
 
     def __str__(self) -> str:
-        return f"{self.user.username} -> {self.contact.username}"
+        return f'{self.user.username} -> {self.contact.username}'
 
 
 class FriendRequest(models.Model):
@@ -50,7 +50,7 @@ class FriendRequest(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"Friend request: {self.sender.username} -> {self.receiver.username}"
+        return f'Friend request: {self.sender.username} -> {self.receiver.username}'
 
 
 class InterestCategory(models.Model):
@@ -60,7 +60,7 @@ class InterestCategory(models.Model):
 class Interest(models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey(
-        InterestCategory, on_delete=models.CASCADE, related_name="interests"
+        InterestCategory, on_delete=models.CASCADE, related_name='interests'
     )
 
     def __str__(self) -> str:
@@ -78,17 +78,17 @@ class Post(models.Model):
     )
 
     class Visibility(models.TextChoices):
-        PUBLIC = "Public", _("Public")
-        CONTACTS_ONLY = "Contacts Only", _("Contacts Only")
+        PUBLIC = 'Public', _('Public')
+        CONTACTS_ONLY = 'Contacts Only', _('Contacts Only')
 
     visibility = models.CharField(
         max_length=20, choices=Visibility.choices, default=Visibility.PUBLIC
     )
 
-    interests = models.ManyToManyField(Interest, related_name="posts")
+    interests = models.ManyToManyField(Interest, related_name='posts')
 
     likes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="likes"
+        settings.AUTH_USER_MODEL, through='Like', related_name='liked_posts'
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -99,7 +99,7 @@ class Post(models.Model):
         verbose_name_plural = 'Posts'
 
     def __str__(self) -> str:
-        return f"{self.title}, by {self.user}, {self.created_at}"
+        return f'{self.title}, by {self.user}, {self.created_at}'
 
 
 class PostContent(models.Model):
@@ -109,10 +109,19 @@ class PostContent(models.Model):
     text = models.TextField(max_length=500)
 
 
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+
+
 class Attachment(models.Model):
     class AttachmentType(models.TextChoices):
-        PHOTO = "Photo", _("Photo")
-        VIDEO = "Video", _("Video")
+        PHOTO = 'Photo', _('Photo')
+        VIDEO = 'Video', _('Video')
 
     file = models.FileField('Attachment', upload_to='attachments/')
     file_type = models.CharField(
