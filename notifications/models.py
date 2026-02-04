@@ -7,7 +7,6 @@ class Notification(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     message = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
 
     class TriggerEvent(models.TextChoices):
         POST_LIKE = 'PostLike', _('PostLike')

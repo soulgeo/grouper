@@ -25,18 +25,12 @@ class NotificationConsumer(WebsocketConsumer):
         return super().disconnect(code)
 
     def post_liked(self, event):
-        like = event['like']
-        notification = Notification(
-            user=self.user,
-            message=f"{like.user.username} liked your post: {like.post.title}",
-            trigger_event=Notification.TriggerEvent.POST_LIKE,
-        )
-        notification.save()
+        notification = event['notification']
 
         context = {'notification': notification}
         csrf_token = self.scope.get('cookies', {}).get('csrftoken')
         if csrf_token:
-            context['csrf_token'] = csrf_token
+            context['csrf_token'] = csrf_token  # type: ignore
 
         html = get_template('notification_oob.html').render(context=context)
         self.send(text_data=html)
