@@ -164,3 +164,17 @@ def edit_chat_room(request, room_id):
     }
 
     return render(request, 'includes/chat_room_edit_oob.html', context)
+
+
+def delete_chat_room(request, room_id):
+    if request.method != 'POST':
+        return redirect('/')  # TODO: Change Redirect
+
+    room = get_object_or_404(ChatRoom, id=room_id)
+
+    if not room.users.filter(id=request.user.id).exists():
+        return HttpResponse("Unauthorized", status=403)
+    
+    room.delete()
+
+    return HttpResponse("")

@@ -1,5 +1,5 @@
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.http import HttpResponse 
+from django.shortcuts import redirect
 
 from .models import Notification
 
@@ -14,7 +14,7 @@ def clear_notification(request, id):
 
     notification.delete
 
-    return HttpResponse("OK", status=200)
+    return HttpResponse("")
 
 def clear_all_notifications(request):
     if request.method != 'POST':
@@ -24,4 +24,4 @@ def clear_all_notifications(request):
         user=request.user
     ).delete()
 
-    return render(request, 'empty.html', {})
+    return HttpResponse("")
