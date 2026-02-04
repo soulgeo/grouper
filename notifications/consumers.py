@@ -1,5 +1,8 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from django.template.loader import get_template
+
+from notifications.models import Notification
 
 
 class NotificationConsumer(WebsocketConsumer):
@@ -23,5 +26,16 @@ class NotificationConsumer(WebsocketConsumer):
 
     def post_liked(self, event):
         like = event['like']
-        message = f"{like.user.username} liked your post: {like.post.title}"
-        self.send(text_data=message)
+        notification = Notification(
+            user=self.user,
+            message=f"{like.user.username} liked your post: {like.post.title}",
+            trigger_event=Notification.TriggerEvent.POST_LIKE,
+        )
+        notification.save()
+
+        html = get_template('notification_oob.html').render(
+            context={
+                'notification': notification,
+            }
+        )
+        self.send(text_data=html)

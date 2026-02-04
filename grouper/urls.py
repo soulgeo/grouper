@@ -12,4 +12,5 @@ urlpatterns = [
     path('_nested_admin/', include('nested_admin.urls')),
     path('', include('core.urls')),
     path('chat/', include('chat.urls')),
+    path('notifications/', include('notifications.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
