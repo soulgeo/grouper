@@ -33,9 +33,10 @@ class NotificationConsumer(WebsocketConsumer):
         )
         notification.save()
 
-        html = get_template('notification_oob.html').render(
-            context={
-                'notification': notification,
-            }
-        )
+        context = {'notification': notification}
+        csrf_token = self.scope.get('cookies', {}).get('csrftoken')
+        if csrf_token:
+            context['csrf_token'] = csrf_token
+
+        html = get_template('notification_oob.html').render(context=context)
         self.send(text_data=html)

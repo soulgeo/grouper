@@ -121,7 +121,7 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    <form hx-post="{% url 'clear_notifications' %}" hx-target="#notification-dropdown"
+                    <form hx-post="{% url 'clear_all_notifications' %}" hx-target="#notification-dropdown"
                         hx-swap="innerHTML">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-ghost w-full">Clear All</button>
