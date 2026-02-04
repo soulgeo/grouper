@@ -5,7 +5,9 @@
 {% endblock title %}
 
 {% block sidebar %}
-{% include "includes/chat_form.html" %}
+<div class="sticky top-0 z-20">
+    {% include "includes/chat_form.html" %}
+</div>
 <div id="rooms">
     {% for room in rooms %}
     {% include "includes/chat_room_card.html" %}
@@ -16,7 +18,7 @@
 {% block main %}
 <div id="chat_room">
     {% for room in rooms %}
-    <div hx-ext="ws" ws-connect="/ws/chatroom/{{ room.id }}" id="messages_room_{{ room.id }}">
+    <div ws-connect="/ws/chatroom/{{ room.id }}" id="messages_room_{{ room.id }}">
         {% if room == active_room %}
         {% include "includes/chat_room.html" with selected_room=room %}
         {% endif %}

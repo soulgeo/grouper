@@ -15,8 +15,13 @@
                 <img src="{{ profile.image_url }}" alt="{{ profile.user.username }}">
             </div>
         </div>
-        <div class="font-bold text-2xl text-center">
-            <h2>{{ profile.user.first_name }} {{ profile.user.last_name }}</h2>
+        <div class="flex flex-col gap-1 items-center">
+            <div class="font-bold text-2xl text-center">
+                <h2>{{ profile.user.first_name }} {{ profile.user.last_name }}</h2>
+            </div>
+            <div class="text-slate-400">
+                <h3>@{{ profile.user.username }}</h3>
+            </div>
         </div>
         {% if user == profile.user %}
         <a href="{% url 'edit_profile' %}" class="btn btn-primary">

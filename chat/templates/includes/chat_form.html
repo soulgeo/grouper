@@ -3,18 +3,22 @@
 
 {% with modal_id=modal_id|default:"chat_modal" %}
 
-<button class="btn btn-ghost w-full text-2xl" onclick="{{ modal_id }}.showModal()">+</button>
+{% if not hide_trigger %}
+<button class="btn bg-base-200 hover:bg-base-100 w-full text-2xl rounded-none" onclick="{{ modal_id }}.showModal()">+</button>
+{% endif %}
 
 <dialog id="{{ modal_id }}" class="modal">
     <div class="modal-box w-11/12">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 focus:outline-none">✕</button>
         </form>
-        <h3 class="font-bold text-lg mb-4 text-center">{{ form_title|default:"Create Group Chat" }}</h3>
-        <form hx-post="{{ chat_url|default:'room/' }}" 
-              hx-target="#chat_room" 
-              hx-swap="afterbegin" 
-              hx-on::after-request="this.reset(); {{ modal_id }}.close()">
+        <h3 class="font-bold text-lg mb-4 text-center">{{ form_title|default:'Create Group Chat' }}</h3>
+        <form   hx-post="{{ chat_url|default:'room/' }}" 
+                hx-encoding="multipart/form-data"
+                enctype="multipart/form-data"
+                hx-target="{{ hx_target|default:'#chat_room' }}" 
+                hx-swap="{{ hx_swap|default:'afterbegin'}}"
+                hx-on::after-request="this.reset(); {{ modal_id }}.close()">
             <div class="flex flex-col gap-4">
                 {% csrf_token %}
                 <div class="form-control px-2 py-4 rounded-xl">
@@ -51,22 +55,32 @@
                     <div class="flex flex-row items-center w-full">
                         <label class="label cursor-pointer justify-start gap-2 py-1 hover:bg-base-200 rounded-md px-4 -mx-1 transition-colors w-full">
                             <div class="avatar flex-none">
-                                <div class="rounded-full w-12 h-12">
+                                <div class="rounded-full w-12 h-12 z-0">
                                     <img src="{{ profile.image_url }}" alt="{{ profile.user.username }}" class="w-full h-full object-cover">
                                 </div>
                             </div>
                             <div class="flex flex-row w-full items-center justify-between">
                                 <span class="label-text text-md">{{ profile.user.username }}</span>
-                                <input type="checkbox" name="contacts" value="{{ profile.user.id }}" class="checkbox checkbox-xs" {% if profile.user.id in selected_profiles %}checked{% endif %} />
+                                <input  type="checkbox" 
+                                        name="contacts" 
+                                        value="{{ profile.user.id }}" 
+                                        class="checkbox checkbox-xs" 
+                                        {% if profile.user.id in selected_profiles %}checked{% endif %} />
                             </div>
                         </label>
                     </div>
                     {% endfor %}
                 </div>
-                <button type="submit" class="btn btn-primary">Create</button>
+                <button type="submit" class="btn btn-primary">{{ submit_text|default:'Create' }}</button>
             </div>
         </form>
     </div>
 </dialog>
+
+{% if auto_open %}
+<script>
+    document.getElementById("{{ modal_id }}").showModal();
+</script>
+{% endif %}
 
 {% endwith %}

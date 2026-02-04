@@ -18,14 +18,14 @@ class ChatConsumer(WebsocketConsumer):
         self.chatroom = get_object_or_404(ChatRoom, id=self.room_id)
 
         async_to_sync(self.channel_layer.group_add)(
-            self.chatroom.name, self.channel_name
+            f"chat_{self.room_id}", self.channel_name
         )
 
         self.accept()
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(
-            self.chatroom.name, self.channel_name
+            f"chat_{self.room_id}", self.channel_name
         )
         return super().disconnect(code)
 
@@ -41,8 +41,8 @@ class ChatConsumer(WebsocketConsumer):
         )
 
         async_to_sync(self.channel_layer.group_send)(
-            self.chatroom.name,
-            {'type': 'chat.message', 'message': message},
+            f"chat_{self.room_id}",
+            {"type": "chat.message", "message": message},
         )
 
     def chat_message(self, event):
