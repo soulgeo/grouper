@@ -1,31 +1,33 @@
-<div class="flex flex-col h-[calc(100vh-180px)]">
-    <ul id="chat_messages_{{ selected_room.id }}" class="flex-grow overflow-y-auto pr-2 mb-4 no-scrollbar">
-        {% for message in selected_room.messages.all reversed %}
-        {% include "includes/chat_message.html" %}
-        {% endfor %}
-    </ul>
-    <div class="w-full bg-base-100 py-2">
-        <form id="form_{{ selected_room.id }}" ws-send 
-            hx-on:htmx:ws-after-send="this.reset(); scrollToBottom_{{ selected_room.id }}()" 
-            hx-on:submit="setTimeout(() => this.reset(), 10)"
-            class="flex gap-2">
-            <input type="text" name="body" class="input input-bordered flex-grow" placeholder="Type a message..." autofocus>
-            <button type="submit" class="btn btn-primary">Send</button>
-        </form>
+<div ws-connect="/ws/chatroom/{{ room.id }}" id="messages_room_{{ room.id }}">
+    <div class="flex flex-col h-[calc(100vh-180px)]">
+        <ul id="chat_messages_{{ room.id }}" class="flex-grow overflow-y-auto pr-2 mb-4 no-scrollbar">
+            {% for message in room.messages.all reversed %}
+            {% include "includes/chat_message.html" %}
+            {% endfor %}
+        </ul>
+        <div class="w-full bg-base-100 py-2">
+            <form id="form_{{ room.id }}" ws-send 
+                hx-on:htmx:ws-after-send="this.reset(); scrollToBottom_{{ room.id }}()" 
+                hx-on:submit="setTimeout(() => this.reset(), 10)"
+                class="flex gap-2">
+                <input type="text" name="body" class="input input-bordered flex-grow" placeholder="Type a message..." autofocus>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
     </div>
 </div>
 <script>
-    function scrollToBottom_{{ selected_room.id }}() {
-        const container = document.getElementById('chat_messages_{{ selected_room.id }}');
+    function scrollToBottom_{{ room.id }}() {
+        const container = document.getElementById('chat_messages_{{ room.id }}');
         if (container) {
             container.scrollTop = container.scrollHeight;
         }
     }
-    scrollToBottom_{{ selected_room.id }}();
+    scrollToBottom_{{ room.id }}();
 </script>
 
 {% for room in rooms %}
-    {% if room.id != selected_room.id %}
+    {% if room.id != room.id %}
     <div id="messages_room_{{ room.id }}" hx-swap-oob="innerHTML"></div>
     {% endif %}
 {% endfor %}

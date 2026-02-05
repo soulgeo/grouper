@@ -8,19 +8,10 @@ from users.models import User, UserProfile
 
 
 def chat_room(request, room_id):
-    rooms = ChatRoom.objects.filter(users=request.user).distinct()
-    selected_room = ChatRoom.objects.get(id=room_id)
+    room = ChatRoom.objects.get(id=room_id)
 
-    if (
-        request.headers.get('HX-Request')
-        and request.headers.get('HX-Target') == 'chat_room'
-    ):
-        template = 'includes/chat_room_container.html'
-    else:
-        template = 'includes/chat_room.html'
-
-    context = {'rooms': rooms, 'selected_room': selected_room}
-    return render(request, template, context)
+    context = {'room': room}
+    return render(request, 'includes/chat_room.html', context)
 
 
 def chat_home(request):
@@ -45,14 +36,15 @@ def chat_home(request):
         user__in_contacts_of__user=user
     )
 
-    template = 'chat.html'
     context = {
         'chat_form': ChatForm(),
         'rooms': rooms,
         'active_room': active_room,
         'friend_profiles': friend_profiles,
+        'hide_chat_button': True,
+        'hide_chat_dock': True,
     }
-    return render(request, template, context)
+    return render(request, 'chat.html', context)
 
 
 def chat_contact(request, user_id):
@@ -132,7 +124,7 @@ def edit_chat_room(request, room_id):
             'form_title': 'Edit Chat Room',
             'submit_text': 'Edit',
             'chat_url': reverse('edit_chat', args=[room_id]),
-            'hx_target': f'#room-{room_id}',
+            'hx_target': f'#card_for_room_{room_id}',
             'hx_swap': 'outerHTML',
             'hide_trigger': True,
             'auto_open': True,
@@ -163,7 +155,7 @@ def edit_chat_room(request, room_id):
         'rooms': ChatRoom.objects.filter(users=request.user).distinct(),
     }
 
-    return render(request, 'includes/chat_room_edit_oob.html', context)
+    return render(request, 'includes/chat_room_card.html', context)
 
 
 def delete_chat_room(request, room_id):
@@ -178,3 +170,12 @@ def delete_chat_room(request, room_id):
     room.delete()
 
     return HttpResponse("")
+
+
+def get_user_chat_rooms(request):
+    user = request.user
+    rooms = ChatRoom.objects.filter(users=user).distinct().with_rich_data(user)  # type: ignore
+    context = {
+        'rooms': rooms,
+    }
+    return render(request, 'includes/chat_cards.html', context)

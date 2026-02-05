@@ -8,7 +8,7 @@
 <div class="sticky top-0 z-20">
     {% include "includes/chat_form.html" %}
 </div>
-<div id="rooms">
+<div id="room_cards">
     {% for room in rooms %}
     {% include "includes/chat_room_card.html" %}
     {% endfor %}
@@ -17,22 +17,17 @@
 
 {% block main %}
 <div id="chat_room">
-    {% for room in rooms %}
-    <div ws-connect="/ws/chatroom/{{ room.id }}" id="messages_room_{{ room.id }}">
-        {% if room == active_room %}
-        {% include "includes/chat_room.html" with selected_room=room %}
-        {% endif %}
-    </div>
-    {% endfor %}
+    {% include "includes/chat_room.html" with selected_room=room %}
+</div>
 
-    <div id="no-chat-selected" class="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] text-base-content/50 {% if active_room %}hidden{% endif %}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mb-4 opacity-20" viewBox="0 0 24 24" fill="currentColor">
-            <path fill-rule="evenodd"
-                d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97Z"
-                clip-rule="evenodd" />
-        </svg>
-        <p class="text-xl font-semibold">Pick someone to chat with.</p>
-    </div>
+<div id="no-chat-selected" class="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] text-base-content/50 {% if active_room %}hidden{% endif %}">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mb-4 opacity-20" viewBox="0 0 24 24" fill="currentColor">
+        <path fill-rule="evenodd"
+            d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97Z"
+            clip-rule="evenodd" />
+    </svg>
+    <p class="text-xl font-semibold">Pick someone to chat with.</p>
+</div>
 </div>
 {% endblock main %}
 

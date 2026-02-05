@@ -4,7 +4,7 @@
 
 - [x] Facebook & Google auth
 - [ ] Chat
-- [ ] Notifications
+- [x] Notifications
 
 ### Optional
 
@@ -14,8 +14,9 @@
 
 - [x] UI: Access to chat app
 - [x] Display available chatrooms on chat sidebar
-- [ ] Group Chats
+- [x] Group Chats
 - [ ] Chat popup windows
+- [ ] Notification red dot indicator
 
 - [ ] Form Messages
 - [ ] Display users who liked a post when clicking on number of likes

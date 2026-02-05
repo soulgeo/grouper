@@ -2,15 +2,17 @@
 {% load static %}
 
 {% partialdef chat_room_card inline=true %}
-<div id="room-{{ room.id }}" class="relative group focus-within:z-50">
-    <div hx-get="{% url 'chatroom' room_id=room.id %}" hx-target="#messages_room_{{ room.id }}" hx-swap="innerHTML" class="btn btn-ghost rounded-none flex flex-row gap-4 p-4 pr-12 h-full items-center justify-start w-full">
+<div id="card_for_room_{{ room.id }}" class="relative group w-full has-[details[open]]:z-50">
+    <div hx-get="{% url 'chatroom' room_id=room.id %}" 
+        hx-target="{{ hx_target|default:'#chat_room' }}" 
+        hx-swap="innerHTML" 
+        class="flex flex-row gap-4 p-4 pr-12 items-center justify-start w-full cursor-pointer hover:bg-base-content/5 transition-colors rounded-lg">
         <div class="avatar flex-none" name="profile-pic">
             <div class="rounded-full w-12 h-12">
                 {% if room.chat_type == room.ChatType.CONTACTS %}
                     {% if room.display_profile_image %}
                     <img class="w-full h-full object-cover" src="{{ MEDIA_URL }}{{ room.display_profile_image }}" alt="{{ room.display_name }}">
                     {% else %}
-                    {# Fallback to static default if None #}
                     <img class="w-full h-full object-cover" src="{% static 'src/img/profile_default.png' %}" alt="{{ room.display_name }}">
                     {% endif %}                 
                 {% else %}
@@ -19,27 +21,28 @@
             </div>
         </div>
         <div name="user" class="flex flex-col items-left w-40">
-            <div class="flex flex-row text-lg justify-start">
+            <div class="flex flex-row text-lg justify-start font-semibold">
                 {{ room.display_name|truncatechars:16 }}
             </div>
-            <div class="flex flex-row text-sm font-normal justify-start">
+            <div class="flex flex-row text-sm font-normal justify-start opacity-70">
                 {{ room.latest_message|truncatechars:18 }}
             </div>
         </div>
     </div>
     
     {% if room.chat_type == room.ChatType.GROUP_CHAT %}
-    <div class="dropdown dropdown-end absolute right-4 top-1/2 -translate-y-1/2">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-xs" onclick="event.stopPropagation()">
+    <details class="dropdown dropdown-end absolute right-4 top-1/2 -translate-y-1/2">
+        <summary role="button" class="btn btn-ghost btn-xs px-1 list-none" onclick="event.stopPropagation()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
-        </div>
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10">
+        </summary>
+        <ul class="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-box w-52 z-[100] border border-base-300">
             <li><a hx-get="{% url 'edit_chat' room.id %}" 
                     hx-target="#edit-modal-container-{{ room.id }}" 
-                    hx-swap="innerHTML">Edit Chat Room</a></li>
-            <li><a class="text-error" onclick="delete_modal_{{ room.id }}.showModal()">Delete Chat Room</a></li>
+                    hx-swap="innerHTML"
+                    onclick="this.closest('details').removeAttribute('open')">Edit Chat Room</a></li>
+            <li><a class="text-error" onclick="delete_modal_{{ room.id }}.showModal(); this.closest('details').removeAttribute('open')">Delete Chat Room</a></li>
         </ul>
-    </div>
+    </details>
     
     <dialog id="delete_modal_{{ room.id }}" class="modal modal-middle">
         <div class="modal-box">
@@ -49,7 +52,7 @@
                 <form method="dialog">
                     <button class="btn">Cancel</button>
                 </form>
-                <form hx-post="{% url 'delete_chat_room' room_id=room.id %}" hx-target="#room-{{ room.id }}" hx-swap="outerHTML">
+                <form hx-post="{% url 'delete_chat_room' room_id=room.id %}" hx-target="#card_for_room_{{ room.id }}" hx-swap="outerHTML">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-error">Delete</button>
                 </form>

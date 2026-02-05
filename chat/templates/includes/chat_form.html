@@ -17,7 +17,7 @@
                 hx-encoding="multipart/form-data"
                 enctype="multipart/form-data"
                 hx-target="{{ hx_target|default:'#chat_room' }}" 
-                hx-swap="{{ hx_swap|default:'afterbegin'}}"
+                hx-swap="{{ hx_swap|default:'innerHTML'}}"
                 hx-on::after-request="this.reset(); {{ modal_id }}.close()">
             <div class="flex flex-col gap-4">
                 {% csrf_token %}
