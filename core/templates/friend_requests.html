@@ -5,10 +5,14 @@ Friend Requests
 {% endblock title %}
 
 {% block main %}
-<div class="font-bold text-xl mb-4">
-    <h2>Incoming Friend Requests:</h2>
+<div class="flex flex-col items-center">
+    <h1 class="mb-6 text-xl font-bold">Incoming Friend Requests</h1>
+    {% if not profiles %}
+    <p>You don't have any pending friend requests.</p>
+    {% else %}
+    {% for profile in profiles %}
+    {% include "includes/user_card.html" %}
+    {% endfor %}
+    {% endif %}
 </div>
-{% for profile in profiles %}
-{% include "includes/user_card.html" %}
-{% endfor %}
 {% endblock main %}

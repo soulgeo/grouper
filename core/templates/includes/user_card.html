@@ -2,22 +2,20 @@
 {% load static %}
 
 {% partialdef user_partial inline=true %}
-<div id="user-{{ profile.user.id }}">
-    <div class="flex gap-4 mb-2 bg-base-200 p-4 rounded-lg drop-shadow-sm relative z-0 focus-within:z-10">
-        <div class="avatar flex-none" name="profile-pic">
-            <div class="btn btn-ghost btn-circle w-12 h-12">
-                <a href="/p/{{ profile.user.username }}"><img class="w-full h-full object-cover"
-                    src="{{ profile.image_url }}" alt="{{ profile.user.username }}"></a>
-            </div>
+<div id="user-{{ profile.user.id }}" class="flex w-full gap-4 mb-2 bg-base-200 p-4 rounded-lg drop-shadow-sm relative z-0 focus-within:z-10">
+    <div class="avatar flex-none" name="profile-pic">
+        <div class="btn btn-ghost btn-circle w-12 h-12">
+            <a href="/p/{{ profile.user.username }}"><img class="w-full h-full object-cover"
+                src="{{ profile.image_url }}" alt="{{ profile.user.username }}"></a>
         </div>
-        <div class="flex-1" name="user">
-            <div class="font-bold text-lg">
-                <a href="/p/{{ profile.user.username }}">{{ profile.user.first_name}} {{ profile.user.last_name }}</a>
-            </div>
-        </div>
-        {% if profile.user != user %}
-        {% include "includes/friend_button.html" %}
-        {% endif %}
     </div>
+    <div class="flex-1" name="user">
+        <div class="font-bold text-lg">
+            <a href="/p/{{ profile.user.username }}">{{ profile.user.first_name}} {{ profile.user.last_name }}</a>
+        </div>
+    </div>
+    {% if profile.user != user %}
+    {% include "includes/friend_button.html" %}
+    {% endif %}
 </div>
 {% endpartialdef user_partial %}

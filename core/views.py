@@ -311,9 +311,8 @@ def accept_friend_request(request, id):
         request_received=Value(False, output_field=BooleanField()),
     ).get(user=friend_request.sender)
 
-    context = {"profile": profile}
-    partial = "includes/friend_button.html#friend_button"
-    return render(request, partial, context)
+    context = {'profile': profile}
+    return render(request, 'includes/friend_button.html#friend_button', context)
 
 
 def search_posts(request):
@@ -434,7 +433,7 @@ def delete_post(request, post_id):
 
     post.delete()
 
-    return HttpResponse("")
+    return HttpResponse('')
 
 
 def edit_post(request, post_id):
