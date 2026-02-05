@@ -166,3 +166,24 @@
         </div>
     </div>
 </nav>
+<script>
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        if (evt.detail.target.id !== 'chat_dock') {
+            return;
+        }
+
+        const path = evt.detail.requestConfig.path;
+        const match = path.match(/\/chat\/room\/(\d+)/);
+        
+        if (match) {
+            const roomId = match[1];
+            const existingPopup = document.querySelector(`#chat_dock #messages_room_${roomId}`);
+            
+            if (existingPopup) {
+                evt.preventDefault();
+                existingPopup.classList.add('ring', 'ring-1', 'ring-primary');
+                setTimeout(() => existingPopup.classList.remove('ring', 'ring-1', 'ring-primary'), 200);
+            }
+        }
+    });
+</script>

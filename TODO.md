@@ -28,3 +28,4 @@
 - [ ] Fix Deletion after Creation not working because of CSRF
 - [ ] Disallow empty messages
 - [ ] Disable hover-in effect for new messages on chat popup show
+- [ ] Fix Chat Popup having a horizontal scroll bar for some chats
