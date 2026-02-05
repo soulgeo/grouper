@@ -8,10 +8,19 @@ from users.models import User, UserProfile
 
 
 def chat_room(request, room_id):
-    room = ChatRoom.objects.get(id=room_id)
+    user = request.user
+    room = ChatRoom.objects.with_rich_data(user).get(id=room_id)  # type: ignore
+
+    if (
+        request.headers.get('HX-Request')
+        and request.headers.get('HX-Target') == 'chat_dock'
+    ):
+        template = 'includes/chat_popup.html'
+    else:
+        template = 'includes/chat_room.html'
 
     context = {'room': room}
-    return render(request, 'includes/chat_room.html', context)
+    return render(request, template, context)
 
 
 def chat_home(request):
@@ -93,11 +102,17 @@ def create_chat_room(request):
 
     context = {
         'room': rich_room,
-        'selected_room': rich_room,
-        'rooms': ChatRoom.objects.filter(users=request.user).distinct(),
     }
 
-    return render(request, 'includes/chat_room_container.html', context)
+    if (
+        request.headers.get('HX-Request')
+        and request.headers.get('HX-Target') == 'chat_dock'
+    ):
+        template = 'includes/chat_popup_container.html'
+    else:
+        template = 'includes/chat_room_container.html'
+
+    return render(request, template, context)
 
 
 def edit_chat_room(request, room_id):
@@ -175,7 +190,14 @@ def delete_chat_room(request, room_id):
 def get_user_chat_rooms(request):
     user = request.user
     rooms = ChatRoom.objects.filter(users=user).distinct().with_rich_data(user)  # type: ignore
+
+    friend_profiles = UserProfile.objects.filter(
+        user__in_contacts_of__user=user
+    )
+
     context = {
         'rooms': rooms,
+        'chat_form': ChatForm(),
+        'friend_profiles': friend_profiles,
     }
-    return render(request, 'includes/chat_cards.html', context)
+    return render(request, 'includes/chat_navbar_cards.html', context)

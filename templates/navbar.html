@@ -82,6 +82,7 @@
         </div>
         <div class="flex-none flex items-center gap-2">
             {% if user.is_authenticated %}
+            <!-- Contacts -->
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-neutral btn-circle">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
@@ -95,15 +96,30 @@
                     <li><a href="{% url 'friend_requests' %}">Friend Requests</a></li>
                 </ul>
             </div>
-            <a href="{% url 'chat' %}">
-                <div class="btn btn-neutral btn-circle">
+            <!-- Chat -->
+            {% if not hide_chat_button %}
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-neutral btn-circle" hx-get="{% url 'get_user_chat_rooms' %}" hx-trigger="click once" hx-target="#chat_cards_container" hx-swap="innerHTML">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97Z"
                             clip-rule="evenodd" />
                     </svg>
                 </div>
-            </a>
+                <div tabindex="0"
+                    class="dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-96 flex flex-col gap-1">
+                    <h4 class="font-bold mb-4 p-2">Chats</h4>
+                    <ul id="chat_cards_container" hx-target="#chat_dock" hx-swap="beforeend" class="max-h-96 overflow-y-auto flex flex-col">
+                        <div class="flex flex-col items-center w-full">
+                            <span class="loading loading-spinner loading-md"></span>
+                        </div>
+                    </ul>
+                    <div id="chat_form_container"></div>
+                    <a href="{% url 'chat' %}" class="btn btn-primary">View All</a>
+                </div>
+            </div>
+            {% endif %}
+            <!-- Notifications -->
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-neutral btn-circle">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
@@ -114,6 +130,7 @@
                 </div>
                 <div tabindex="0"
                     class="menu dropdown-content mt-3 z-[1] shadow bg-base-200 rounded-box w-96 flex-nowrap">
+                    <h4 class="font-bold mb-4 p-2">Notifications</h4>
                     <ul id="notification-dropdown" class="max-h-60 overflow-y-auto">
                         {% for notification in notifications %}
                         <li>
@@ -128,6 +145,7 @@
                     </form>
                 </div>
             </div>
+            <!-- Account & Profile -->
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-neutral btn-circle avatar">
                     <div class="w-10 rounded-full">

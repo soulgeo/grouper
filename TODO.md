@@ -21,3 +21,10 @@
 - [ ] Form Messages
 - [ ] Display users who liked a post when clicking on number of likes
 - [ ] Dynamically load posts on scroll with HTMX
+
+
+### Chat Fix
+
+- [ ] Fix Deletion after Creation not working because of CSRF
+- [ ] Disallow empty messages
+- [ ] Disable hover-in effect for new messages on chat popup show

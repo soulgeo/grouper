@@ -28,6 +28,11 @@
         {% block main %}
         {% endblock main %}
     </div>
+    {% if not hide_chat_dock %}
+    <div id="chat_dock" class="fixed bottom-0 right-0 z-50 flex gap-4 pr-4 pointer-events-none">
+        <!-- Chat tabs are injected here -->
+    </div>
+    {% endif %}
 </body>
 
 </html>

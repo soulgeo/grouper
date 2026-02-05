@@ -13,7 +13,7 @@
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 focus:outline-none">✕</button>
         </form>
         <h3 class="font-bold text-lg mb-4 text-center">{{ form_title|default:'Create Group Chat' }}</h3>
-        <form   hx-post="{{ chat_url|default:'room/' }}" 
+        <form   hx-post="{{ chat_url|default:'chat/room/' }}" 
                 hx-encoding="multipart/form-data"
                 enctype="multipart/form-data"
                 hx-target="{{ hx_target|default:'#chat_room' }}" 

@@ -1,4 +1,4 @@
-{% include "includes/chat_room.html" %}
+<div id="card_for_room_{{ room.id }}" hx-swap-oob="delete"></div>
 
 <div id="chat_cards_container" hx-swap-oob="afterbegin">
     {% include "includes/chat_room_card.html" %}
