@@ -1,0 +1,24 @@
+<dialog id="delete_modal_{{ room.id }}" class="modal modal-middle">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Delete Chat Room</h3>
+        <p class="py-4">Are you sure? This action cannot be undone.</p>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn focus:outline-none">Cancel</button>
+            </form>
+            <form hx-post="{% url 'delete_chat_room' room_id=room.id %}" 
+                  hx-target="#card_for_room_{{ room.id }}" 
+                  hx-swap="outerHTML"
+                  hx-on::after-request="delete_modal_{{ room.id }}.close()">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-error">Delete</button>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+<script>
+    document.getElementById("delete_modal_{{ room.id }}").showModal();
+</script>

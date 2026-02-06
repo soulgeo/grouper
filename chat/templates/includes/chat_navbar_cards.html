@@ -3,4 +3,10 @@
     {% include "includes/chat_room_card.html" with hx_target="#chat_dock" hx_swap="beforeend" %}
 </li>
 {% endfor %}
+<div id="chat_form_container" hx-swap-oob="innerHTML">
+    <button class="btn bg-base-200 hover:bg-base-100 w-full text-2xl rounded-none" 
+            hx-get="{% url 'get_create_chat_room' %}" 
+            hx-target="#global_modal_container" 
+            hx-swap="innerHTML">+</button>
+</div>
 <div id="chat_button_indicator" hx-swap-oob="delete"></div>

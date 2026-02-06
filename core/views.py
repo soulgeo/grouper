@@ -390,6 +390,31 @@ def like_post(request, post_id):
     return render(request, partial, context)
 
 
+def get_create_post(request):
+    interest_categories = InterestCategory.objects.prefetch_related(
+        'interests'
+    ).all()
+    context = {
+        'post_form': PostForm(),
+        'post_content_form': PostContentForm(),
+        'interest_categories': interest_categories,
+        'modal_id': 'post_modal',
+        'hide_trigger': True,
+        'auto_open': True,
+        'hx_target': '#posts-body',
+        'hx_swap': 'afterbegin',
+    }
+    return render(request, 'includes/post_form.html', context)
+
+
+def get_delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if post.user != request.user:
+        return HttpResponse("Unauthorized", status=403)
+    
+    return render(request, 'includes/delete_post_modal.html', {'post': post})
+
+
 @login_required
 def create_post(request):
     if not request.method == 'POST':
@@ -463,6 +488,7 @@ def edit_post(request, post_id):
             'hx_target': f'#post-{post.id}',
             'hx_swap': 'outerHTML',
             'hide_trigger': True,
+            'auto_open': True,
         }
         template = 'includes/post_form.html'
         return render(request, template, context)

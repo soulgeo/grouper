@@ -21,10 +21,12 @@
                 </div>
                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                     <li><a hx-get="{% url 'edit_post' post.id %}" 
-                           hx-target="#edit-modal-container-{{ post.id }}" 
-                           hx-swap="innerHTML"
-                           hx-on::after-request="document.getElementById('edit_modal_{{ post.id }}').showModal()">Edit Post</a></li>
-                    <li><a class="text-error" onclick="delete_modal_{{ post.id }}.showModal()">Delete Post</a></li>
+                           hx-target="#global_modal_container" 
+                           hx-swap="innerHTML">Edit Post</a></li>
+                    <li><a class="text-error" 
+                           hx-get="{% url 'get_delete_post' post.id %}"
+                           hx-target="#global_modal_container"
+                           hx-swap="innerHTML">Delete Post</a></li>
                 </ul>
             </div>
             {% endif %}
@@ -60,26 +62,5 @@
             </div>
         </div>
     </div>
-    {% if user == post.user %}
-    <dialog id="delete_modal_{{ post.id }}" class="modal modal-middle">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg">Delete Post</h3>
-            <p class="py-4">Are you sure? This action cannot be undone.</p>
-            <div class="modal-action">
-                <form method="dialog">
-                    <button class="btn">Cancel</button>
-                </form>
-                <form hx-post="{% url 'delete_post' post_id=post.id %}" hx-target="#post-{{ post.id }}" hx-swap="outerHTML">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-error">Delete</button>
-                </form>
-            </div>
-        </div>
-        <form method="dialog" class="modal-backdrop">
-            <button>close</button>
-        </form>
-    </dialog>
-    <div id="edit-modal-container-{{ post.id }}"></div>
-    {% endif %}
 </div>
 {% endpartialdef post_partial %}

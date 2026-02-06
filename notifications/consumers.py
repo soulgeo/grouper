@@ -46,7 +46,7 @@ class NotificationConsumer(WebsocketConsumer):
         room = ChatRoom.objects.with_rich_data(self.user).get(  # type: ignore
             id=room_id
         )
-        print(room.display_profile_image)
+
         show_indicator = author_username != self.user.username
 
         html = get_template('includes/chat_room_card_oob.html').render(

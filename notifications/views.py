@@ -12,7 +12,7 @@ def clear_notification(request, id):
     if notification.user != request.user:
         return HttpResponse("Unauthorized", status=403)
 
-    notification.delete
+    notification.delete()
 
     return HttpResponse("")
 

@@ -9,6 +9,7 @@ urlpatterns = [
     path('search/', views.search_posts, name='search'),
     path('contacts/', views.contacts, name='contacts'),
     path('submit-post', views.create_post, name='submit_post'),
+    path('submit-post/confirm', views.get_create_post, name='get_create_post'),
     path('like-post/<int:post_id>', views.like_post, name='like_post'),
     path(
         'send-friend-request/<str:username>',
@@ -22,6 +23,7 @@ urlpatterns = [
         name='accept_friend_request',
     ),
     path('search-users', views.search_users, name='search_users'),
+    path('delete-post/confirm/<int:post_id>', views.get_delete_post, name='get_delete_post'),
     path('delete-post/<int:post_id>', views.delete_post, name='delete_post'),
     path('edit-post/<int:post_id>', views.edit_post, name='edit_post'),
 ]

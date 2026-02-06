@@ -12,7 +12,7 @@
             hx-on:htmx:ws-after-send="this.reset(); scrollToBottom_{{ room.id }}()" 
             hx-on:submit="setTimeout(() => this.reset(), 10)"
             class="flex gap-2">
-            <input type="text" name="body" class="input input-bordered flex-grow" placeholder="Type a message..." autofocus>
+            <input type="text" name="body" class="input input-bordered flex-grow" placeholder="Type a message..." autofocus required title="" oninvalid="event.preventDefault();">
             <button type="submit" class="btn btn-primary">Send</button>
         </form>
     </div>

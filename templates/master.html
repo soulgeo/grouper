@@ -22,14 +22,18 @@
     {{ debug|json_script:"debug-mode" }}
 </head>
 
-<body hx-ext="ws" ws-connect="/ws/notifications/">
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-ext="ws" ws-connect="/ws/notifications/">
+    {% block sidebar_container %}
+    {% endblock sidebar_container %}
     <div class="m-0 fixed w-full top-0 left-0 z-10">
         {% include "navbar.html" %}
     </div>
+    {% block layout %}
     <div class="w-full max-w-screen-lg mx-auto px-4 mt-24 mb-8">
         {% block main %}
         {% endblock main %}
     </div>
+    {% endblock layout %}
     {% if not hide_chat_dock %}
     <div id="chat_dock" class="fixed bottom-0 right-0 z-50 flex flex-row items-end gap-4 pr-4 pointer-events-none">
         <!-- Chat tabs are injected here -->
@@ -39,4 +43,3 @@
 
 <script src="{% static "src/main.js" %}"></script>
 </html>
-

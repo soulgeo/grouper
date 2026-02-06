@@ -115,8 +115,24 @@ def create_chat_room(request):
     return render(request, template, context)
 
 
+def get_create_chat_room(request):
+    friend_profiles = UserProfile.objects.filter(
+        user__in_contacts_of__user=request.user
+    )
+    context = {
+        'chat_form': ChatForm(),
+        'friend_profiles': friend_profiles,
+        'modal_id': 'chat_modal',
+        'hide_trigger': True,
+        'auto_open': True,
+        'chat_url': reverse('create_chat_room'),
+        'hx_target': '#chat_dock',
+        'hx_swap': 'beforeend',
+    }
+    return render(request, 'includes/chat_form.html', context)
+
+
 def edit_chat_room(request, room_id):
-    print(f"DEBUG: edit_chat_room called for room {room_id}")
     room = get_object_or_404(ChatRoom, id=room_id)
 
     if not room.users.filter(id=request.user.id).exists():
@@ -171,6 +187,14 @@ def edit_chat_room(request, room_id):
     }
 
     return render(request, 'includes/chat_room_card.html', context)
+
+
+def get_delete_chat_room(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id)
+    if not room.users.filter(id=request.user.id).exists():
+        return HttpResponse("Unauthorized", status=403)
+    
+    return render(request, 'includes/delete_chat_modal.html', {'room': room})
 
 
 def delete_chat_room(request, room_id):

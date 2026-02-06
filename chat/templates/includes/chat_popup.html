@@ -37,7 +37,7 @@
         </div>
     </div>
     <div name="chat_popup_content" id="chat_popup_content_{{ room.id }}" class="flex flex-col h-[500px] bg-base-100 px-4 pb-4">
-        <ul id="chat_messages_{{ room.id }}" class="flex-grow overflow-y-auto pr-2 mb-4">
+        <ul id="chat_messages_{{ room.id }}" class="flex flex-col overflow-y-auto overflow-x-hidden pr-2 mb-4 py-1">
             {% for message in room.messages.all reversed %}
             {% include "includes/chat_message.html" %}
             {% endfor %}

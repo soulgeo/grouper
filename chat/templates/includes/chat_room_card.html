@@ -37,33 +37,16 @@
         </summary>
         <ul class="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-box w-52 z-[100] border border-base-300">
             <li><a hx-get="{% url 'edit_chat' room.id %}" 
-                    hx-target="#edit-modal-container-{{ room.id }}" 
+                    hx-target="#global_modal_container" 
                     hx-swap="innerHTML"
                     onclick="this.closest('details').removeAttribute('open')">Edit Chat Room</a></li>
-            <li><a class="text-error" onclick="delete_modal_{{ room.id }}.showModal(); this.closest('details').removeAttribute('open')">Delete Chat Room</a></li>
+            <li><a class="text-error" 
+                   hx-get="{% url 'get_delete_chat_room' room.id %}"
+                   hx-target="#global_modal_container"
+                   hx-swap="innerHTML"
+                   onclick="this.closest('details').removeAttribute('open')">Delete Chat Room</a></li>
         </ul>
     </details>
-    
-    <dialog id="delete_modal_{{ room.id }}" class="modal modal-middle">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg">Delete Chat Room</h3>
-            <p class="py-4">Are you sure? This action cannot be undone.</p>
-            <div class="modal-action">
-                <form method="dialog">
-                    <button class="btn">Cancel</button>
-                </form>
-                <form hx-post="{% url 'delete_chat_room' room_id=room.id %}" hx-target="#card_for_room_{{ room.id }}" hx-swap="outerHTML">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-error">Delete</button>
-                </form>
-            </div>
-        </div>
-        <form method="dialog" class="modal-backdrop">
-            <button>close</button>
-        </form>
-    </dialog>
     {% endif %}
-
-    <div id="edit-modal-container-{{ room.id }}"></div>
 </div>
 {% endpartialdef chat_room_card %}

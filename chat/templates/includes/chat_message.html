@@ -1,6 +1,6 @@
 {% if message.author == user %}
 <li class="flex justify-end mb-4">
-    <div class="bg-primary text-primary-content rounded-l-lg rounded-tr-lg p-4 max-w-[75%]">
+    <div class="bg-primary text-primary-content rounded-l-lg rounded-tr-lg p-4 max-w-[75%] break-words">
         <span>{{ message.body }}</span>
     </div>
     <div class="flex items-end">
@@ -25,7 +25,7 @@
                 <path d="M2.8,13L8,13L8,0.2C7.1,5.5,6.5,8.7,1.7,10.4C-1.6,11.5,1,13,2.8,13z"></path>
             </svg>
         </div>
-        <div class="bg-base-200 p-4 max-w-[75%] rounded-r-lg rounded-tl-lg">
+        <div class="bg-base-200 p-4 max-w-[75%] rounded-r-lg rounded-tl-lg break-words">
             <span>{{ message.body }}</span>
         </div>  
     </div>

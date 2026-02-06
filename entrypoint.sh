@@ -3,6 +3,9 @@
 echo "Restoring HTMX..."
 npm run copy-htmx
 
+echo "Collecting static files..."
+python manage.py collectstatic --noinput --clear
+
 echo "Running migrations..."
 python manage.py migrate
 

@@ -4,7 +4,10 @@
 {% with modal_id=modal_id|default:"post_modal" %}
 
 {% if not hide_trigger %}
-<div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-sm cursor-pointer hover:bg-base-300 transition-colors duration-200" onclick="{{ modal_id }}.showModal()">
+<div class="flex flex-row gap-4 p-4 bg-base-200 rounded-lg drop-shadow-sm cursor-pointer hover:bg-base-300 transition-colors duration-200" 
+     hx-get="{% url 'get_create_post' %}" 
+     hx-target="#global_modal_container" 
+     hx-swap="innerHTML">
     <a href="/p/{{ user.username }}" class="btn btn-ghost btn-circle avatar flex-none" onclick="event.stopPropagation()">
         <div class="w-10 rounded-full overflow-hidden">
             <img class="w-full h-full object-cover" src="{{ user.profile.image_url }}" alt="{{ user.username }}">
@@ -113,4 +116,11 @@
         <button>close</button>
     </form>
 </dialog>
+
+{% if auto_open %}
+<script>
+    document.getElementById("{{ modal_id }}").showModal();
+</script>
+{% endif %}
+
 {% endwith %}

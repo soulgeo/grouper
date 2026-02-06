@@ -1,5 +1,5 @@
 <div id="chat_messages_{{ room.id }}" hx-swap-oob="beforeend"> 
-    <div class="fade-in-up">
+    <div class="fade-in-up" onanimationend="this.classList.remove('fade-in-up')">
         {% include 'includes/chat_message.html' %}
     </div>
     <script>scrollToBottom_{{ room.id }}()</script>
