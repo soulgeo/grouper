@@ -1,0 +1,6 @@
+{% for notification in notifications %}
+<li>
+    {% include "notification.html" %}
+</li>
+{% endfor %}
+<div id="notification_button_indicator" hx-swap-oob="delete"></div>

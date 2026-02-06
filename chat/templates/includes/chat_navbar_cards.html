@@ -3,6 +3,4 @@
     {% include "includes/chat_room_card.html" with hx_target="#chat_dock" hx_swap="beforeend" %}
 </li>
 {% endfor %}
-<div id="chat_form_container" hx-swap-oob="innerHTML">
-    {% include "includes/chat_form.html" with hx_target="#chat_dock" hx_swap="beforeend" %}
-</div>
+<div id="chat_button_indicator" hx-swap-oob="delete"></div>

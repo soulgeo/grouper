@@ -3,3 +3,10 @@
 <div id="chat_cards_container" hx-swap-oob="afterbegin">
     {% include "includes/chat_room_card.html" %}
 </div>
+
+{% if show_indicator %}
+<div id="chat_button_container" hx-swap-oob="innerHTML" class="indicator">
+    <span id="chat_button_indicator" class="indicator-item badge badge-sm badge-accent top-1 right-1"></span>
+    {% include "includes/chat_button.html" %}
+</div>
+{% endif %}

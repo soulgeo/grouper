@@ -1,5 +1,9 @@
-<div id="notification-dropdown" hx-swap-oob="afterbegin">
+<div id="notification_dropdown" hx-swap-oob="afterbegin">
     <li>
         {% include "notification.html" %}
     </li>
+</div>
+<div id="notification_button_container" hx-swap-oob="innerHTML">
+    <span id="notification_button_indicator" class="indicator-item badge badge-sm badge-accent top-1 right-1"></span>
+    {% include "includes/notification_button.html" %}
 </div>

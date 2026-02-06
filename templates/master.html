@@ -18,6 +18,8 @@
     <script src="{% static 'src/htmx.min.js' %}"></script>
     <script src="{% static 'src/ws.js' %}"></script>
 
+    <!-- Debug mode detection -->
+    {{ debug|json_script:"debug-mode" }}
 </head>
 
 <body hx-ext="ws" ws-connect="/ws/notifications/">
@@ -35,4 +37,6 @@
     {% endif %}
 </body>
 
+<script src="{% static "src/main.js" %}"></script>
 </html>
+

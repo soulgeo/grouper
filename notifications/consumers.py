@@ -38,15 +38,22 @@ class NotificationConsumer(WebsocketConsumer):
         self.send(text_data=html)
 
     def chat_list_update(self, event):
+        if not self.user:
+            return
+
         room_id = event['room_id']
+        author_username = event['author_username']
         room = ChatRoom.objects.with_rich_data(self.user).get(  # type: ignore
             id=room_id
         )
         print(room.display_profile_image)
+        show_indicator = author_username != self.user.username
+
         html = get_template('includes/chat_room_card_oob.html').render(
             context={
                 'room': room,
                 'MEDIA_URL': settings.MEDIA_URL,
+                'show_indicator': show_indicator,
             }
         )
         self.send(text_data=html)

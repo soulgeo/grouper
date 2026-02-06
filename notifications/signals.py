@@ -44,5 +44,6 @@ def update_chat_list_on_new_message(sender, instance, created, **kwargs):
             user.username, {
                 "type": "chat.list_update",
                 "room_id": instance.room.id,
+                "author_username": instance.author.username,
             }
         )
