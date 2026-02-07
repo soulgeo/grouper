@@ -26,7 +26,9 @@
     {% block sidebar_container %}
     {% endblock sidebar_container %}
     <div class="m-0 fixed w-full top-0 left-0 z-10">
+        {% block navbar %}
         {% include "navbar.html" %}
+        {% endblock navbar %}
     </div>
     {% include "includes/messages.html" %}
     {% block layout %}

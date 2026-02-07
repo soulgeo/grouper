@@ -10,8 +10,8 @@
                     src="{{ post.user.profile.image_url }}" alt="{{ post.user.username }}"></a>
             </div>
         </div>
-        <div class="flex-1 relative" name="post">
-            <div class="stat-title text-sm pr-10">
+        <div class="flex-1 relative min-w-0" name="post">
+            <div class="stat-title text-sm pr-10 break-words whitespace-normal">
                 <a href="/p/{{ user.username }}">{{ post.user.first_name}} {{ post.user.last_name }}</a> · {{ post.created_at }}, {{ post.visibility }}
             </div>
             {% if user == post.user %}
@@ -30,13 +30,13 @@
                 </ul>
             </div>
             {% endif %}
-            <div class="font-bold text-lg">
+            <div class="font-bold text-lg break-words">
                 {{ post.title }}
             </div>
-            <div>
+            <div class="break-words">
                 {{ post.content.text }}
             </div>
-            <div class="mt-2">
+            <div class="flex flex-row gap-1 mt-2 flex-wrap">
                 {% for interest in post.interests.all %}
                 {% include "includes/interest.html" %}
                 {% endfor %}

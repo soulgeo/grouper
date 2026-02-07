@@ -1,7 +1,7 @@
 {% load widget_tweaks %}
 
 <input type="hidden" name="query" value="{{ query }}">
-<div class="flex gap-4 form-control">
+<div class="flex flex-col gap-4 form-control">
     {% if user.is_authenticated %}
     <div class="flex flex-row items-center">
         <input type="checkbox" id="in-contacts" name="in_contacts" value="true" class="checkbox checkbox-md" {% if in_contacts %}checked{% endif %}>

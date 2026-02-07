@@ -50,12 +50,12 @@
                     </a>
                 </div>
             </div>
-            <div class="flex flex-col w-full">
+            <div class="flex flex-col flex-1 min-w-0">
                 <form hx-post="{{ post_url|default:'/submit-post' }}" hx-target="{{ hx_target|default:'#posts-body' }}" hx-swap="{{ hx_swap|default:'afterbegin' }}"
                     hx-on:close-modal="this.reset(); updateVisibility(this, 'Public', 'Public'); {{ modal_id }}.close()">
                     {% csrf_token %}
                     <div class="flex flex-col md:flex-row gap-4">
-                        <div class="flex flex-col w-full gap-4 form-control">
+                        <div class="flex flex-col flex-1 min-w-0 gap-4 form-control">
                             <div class="font-bold form-control w-full">
                                 {% render_field post_form.title placeholder="Title..." class="input input-bordered focus:outline-none" autofocus="true" %}
                             </div>

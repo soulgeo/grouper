@@ -7,11 +7,10 @@ Edit Profile: {{ user.username }}
 {% endblock title %}
 
 {% block main %}
-<div class="font-bold text-3xl">
-    <h1>Edit profile</h1>
-</div>
-<div class="divider"></div>
 <div class="flex-1 max-w-4xl mx-auto">
+    <div class="font-bold text-2xl">
+        <h1>Edit profile</h1>
+    </div>
     <form method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data" class="space-y-6">
         {% csrf_token %}
 
@@ -29,7 +28,7 @@ Edit Profile: {{ user.username }}
         {% endif %}
         
         <!-- Profile Image -->
-        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
+        <div class="form-control bg-base-200 p-6 pt-4 rounded-xl border border-base-200">
             <h3 class="text-lg font-bold mb-4">Profile Image</h3>
             <div class="flex items-center gap-6">
                 <div class="avatar">
@@ -57,7 +56,7 @@ Edit Profile: {{ user.username }}
         </div>
 
         <!-- Personal Information -->
-        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
+        <div class="form-control bg-base-200 p-6 pt-4 rounded-xl border border-base-200">
             <h3 class="text-lg font-bold mb-4">Personal Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-control">
@@ -108,8 +107,8 @@ Edit Profile: {{ user.username }}
         </div>
 
         <!-- Bio -->
-        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
-            <label class="label"><span class="label-text font-bold text-lg">Bio</span></label>
+        <div class="form-control bg-base-200 p-6 pt-4 rounded-xl border border-base-200">
+            <h3 class="text-lg font-bold mb-4">Bio</h3>
             {% render_field user_profile_form.bio class="textarea textarea-bordered h-32 w-full" placeholder="Tell us about yourself..." %}
             {% if user_profile_form.bio.errors %}
             <div class="text-error text-sm mt-1">
@@ -121,8 +120,8 @@ Edit Profile: {{ user.username }}
         </div>
 
         <!-- Interests -->
-        <div class="form-control bg-base-200 p-6 rounded-xl border border-base-200">
-            <label class="label"><span class="label-text font-bold text-lg">Interests</span></label>
+        <div class="form-control bg-base-200 p-6 pt-4 rounded-xl border border-base-200">
+            <h3 class="text-lg font-bold mb-4">Interests</h3>
             <div class="h-72 border border-base-content/20 rounded-lg overflow-y-auto p-4 bg-base-50">
                 {% for category in interest_categories %}
                 <div class="mb-6 last:mb-0">

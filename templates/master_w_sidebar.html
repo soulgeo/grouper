@@ -1,17 +1,30 @@
 {% extends "master.html" %}
 
 {% block sidebar_container %}
-<div class="fixed bg-base-200 h-full top-0 pt-16 w-80 overflow-y-auto">
-    {% block sidebar %}
-    {% endblock sidebar %}
-</div>
 {% endblock sidebar_container %}
 
+{% block navbar %}
+{% include "navbar.html" with enable_drawer=True %}
+{% endblock navbar %}
+
 {% block layout %}
-<div class="ml-80 mt-24 px-4 mb-8">
-    <div class="max-w-screen-lg mx-auto">
-        {% block main %}
-        {% endblock main %}
+<div class="drawer lg:drawer-open">
+    <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+    
+    <div class="drawer-content flex flex-col">
+        <!-- Main content -->
+        <div class="w-full max-w-screen-lg mx-auto px-4 mt-24 mb-8">
+            {% block main %}
+            {% endblock main %}
+        </div>
+    </div> 
+    
+    <div class="drawer-side z-50 lg:z-0">
+        <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label> 
+        <div class="flex flex-col p-4 w-80 min-h-full bg-base-200 text-base-content pt-4 lg:pt-24">
+            {% block sidebar %}
+            {% endblock sidebar %}
+        </div>
     </div>
 </div>
 {% endblock layout %}
