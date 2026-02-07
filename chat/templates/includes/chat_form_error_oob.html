@@ -1,0 +1,13 @@
+<div id="{{ modal_id }}_errors" hx-swap-oob="innerHTML">
+    {% if form_errors %}
+        <div class="alert alert-error py-2 px-4 mb-4 text-sm rounded-lg">
+            <ul class="list-none p-0 m-0">
+                {% for field, errors in form_errors.items %}
+                    {% for error in errors %}
+                        <li>{% if field != '__all__' %}<span class="font-bold">{{ field }}:</span> {% endif %}{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>

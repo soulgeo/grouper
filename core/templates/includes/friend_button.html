@@ -9,12 +9,11 @@
             In Contacts
         </div>
         <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-40 p-2 shadow-lg mt-1">
-            <form method="get" action="{% url 'chat' %}">
-                <li>
-                    <input type="hidden" name="user_id" value="{{ profile.user.id }}">
-                    <button type="submit">Message</button>
-                </li>
-            </form>
+            <li><button hx-get="{% url 'contact_chat_room' user_id=profile.user.id %}"
+                hx-target="#chat_dock"
+                hx-swap="beforeend">
+                Message
+            </button></li>
         </ul>
     </div>
     {% elif profile.request_received %}
@@ -22,7 +21,7 @@
         hx-target="#friend-button-{{ profile.user.id }}" hx-swap="outerHTML">
         {% csrf_token %}
         <button type="submit" class="btn btn-primary">Accept</button>
-    </form>
+    </form> ff
     {% elif profile.request_sent %}
     <div class="btn btn-ghost">Request Sent</div>
     {% else %}

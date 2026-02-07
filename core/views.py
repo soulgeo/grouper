@@ -426,8 +426,13 @@ def create_post(request):
     interests = request.POST.getlist('interests')
 
     if not post_form.is_valid() or not post_content_form.is_valid():
-        print('Form errors:', post_form.errors, post_content_form.errors)
-        return redirect('/')  # TODO: Error
+        context = {
+            'form_errors': {**post_form.errors, **post_content_form.errors},
+            'modal_id': 'post_modal',
+        }
+        response = render(request, 'includes/post_form_errors.html', context)
+        response['HX-Reswap'] = 'none'
+        return response
 
     post_instance = post_form.save(commit=False)
     post_instance.user = request.user
@@ -444,7 +449,9 @@ def create_post(request):
         'post': post_instance,
     }
     partial = 'includes/post.html#post_partial'
-    return render(request, partial, context)
+    response = render(request, partial, context)
+    response['HX-Trigger'] = 'close-modal'
+    return response
 
 
 def delete_post(request, post_id):
@@ -504,8 +511,13 @@ def edit_post(request, post_id):
     post_content_form = PostContentForm(request.POST, instance=post_content)
 
     if not post_form.is_valid() or not post_content_form.is_valid():
-        print('Form errors:', post_form.errors, post_content_form.errors)
-        return redirect('/')  # TODO: Error
+        context = {
+            'form_errors': {**post_form.errors, **post_content_form.errors},
+            'modal_id': f'edit_modal_{post.id}',
+        }
+        response = render(request, 'includes/post_form_errors.html', context)
+        response['HX-Reswap'] = 'none'
+        return response
 
     post_form.save()
     post.interests.set(interests)
@@ -516,4 +528,6 @@ def edit_post(request, post_id):
         'post': post,
     }
     partial = 'includes/post.html#post_partial'
-    return render(request, partial, context)
+    response = render(request, partial, context)
+    response['HX-Trigger'] = 'close-modal'
+    return response

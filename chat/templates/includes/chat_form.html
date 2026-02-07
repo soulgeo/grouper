@@ -13,12 +13,25 @@
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 focus:outline-none">✕</button>
         </form>
         <h3 class="font-bold text-lg mb-4 text-center">{{ form_title|default:'Create Group Chat' }}</h3>
+        <div id="{{ modal_id }}_errors">
+            {% if form_errors %}
+                <div class="alert alert-error py-2 px-4 mb-4 text-sm rounded-lg">
+                    <ul class="list-none p-0 m-0">
+                        {% for field, errors in form_errors.items %}
+                            {% for error in errors %}
+                                <li>{% if field != '__all__' %}<span class="font-bold">{{ field }}:</span> {% endif %}{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
         <form   hx-post="{{ chat_url|default:'chat/room/' }}" 
                 hx-encoding="multipart/form-data"
                 enctype="multipart/form-data"
                 hx-target="{{ hx_target|default:'#chat_room' }}" 
                 hx-swap="{{ hx_swap|default:'innerHTML'}}"
-                hx-on::after-request="this.reset(); {{ modal_id }}.close()">
+                hx-on:close-modal="this.reset(); {{ modal_id }}.close()">
             <div class="flex flex-col gap-4">
                 {% csrf_token %}
                 <div class="form-control px-2 py-4 rounded-xl">

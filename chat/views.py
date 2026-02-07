@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -20,7 +20,22 @@ def chat_room(request, room_id):
         template = 'includes/chat_room.html'
 
     context = {'room': room}
-    return render(request, template, context)
+    response = render(request, template, context)
+    response['HX-Trigger'] = 'close-modal'
+    return response
+
+
+def contact_chat_room(request, user_id):
+    user = request.user
+    contact = User.objects.get(id=user_id)
+    if not user.contacts.filter(contact=contact).exists():
+        return HttpResponseBadRequest()
+
+    room = ChatRoom.objects.with_rich_data(user).filter(  # type: ignore
+        chat_type=ChatRoom.ChatType.CONTACTS, users=user
+    ).get(users=contact)
+    context = {'room': room}
+    return render(request, 'includes/chat_popup.html', context)
 
 
 def chat_home(request):
@@ -86,8 +101,13 @@ def create_chat_room(request):
     users.append(str(request.user.id))
 
     if not chat_form.is_valid():
-        print('Form errors:', chat_form.errors)
-        return redirect('/')
+        context = {
+            'form_errors': chat_form.errors,
+            'modal_id': 'chat_modal',
+        }
+        response = render(request, 'includes/chat_form_error_oob.html', context)
+        response['HX-Reswap'] = 'none'
+        return response
 
     chat_room_instance = chat_form.save(commit=False)
     chat_room_instance.chat_type = ChatRoom.ChatType.GROUP_CHAT
@@ -112,7 +132,9 @@ def create_chat_room(request):
     else:
         template = 'includes/chat_room_container.html'
 
-    return render(request, template, context)
+    response = render(request, template, context)
+    response['HX-Trigger'] = 'close-modal'
+    return response
 
 
 def get_create_chat_room(request):
@@ -160,7 +182,7 @@ def edit_chat_room(request, room_id):
             'hide_trigger': True,
             'auto_open': True,
         }
-        
+
         return render(request, 'includes/chat_form.html', context)
 
     if request.method != "POST":
@@ -168,8 +190,13 @@ def edit_chat_room(request, room_id):
 
     chat_form = ChatForm(request.POST, request.FILES, instance=room)
     if not chat_form.is_valid():
-        print('Form errors:', chat_form.errors)
-        return redirect('/')  # TODO: Error
+        context = {
+            'form_errors': chat_form.errors,
+            'modal_id': f'edit_modal_{room_id}',
+        }
+        response = render(request, 'includes/chat_form_error_oob.html', context)
+        response['HX-Reswap'] = 'none'
+        return response
 
     users = request.POST.getlist('contacts') + [request.user]
     chat_room_instance = chat_form.save(commit=False)
@@ -186,14 +213,16 @@ def edit_chat_room(request, room_id):
         'rooms': ChatRoom.objects.filter(users=request.user).distinct(),
     }
 
-    return render(request, 'includes/chat_room_card.html', context)
+    response = render(request, 'includes/edit_chat_room_oob.html', context)
+    response['HX-Trigger'] = 'close-modal'
+    return response
 
 
 def get_delete_chat_room(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id)
     if not room.users.filter(id=request.user.id).exists():
         return HttpResponse("Unauthorized", status=403)
-    
+
     return render(request, 'includes/delete_chat_modal.html', {'room': room})
 
 
@@ -205,7 +234,7 @@ def delete_chat_room(request, room_id):
 
     if not room.users.filter(id=request.user.id).exists():
         return HttpResponse("Unauthorized", status=403)
-    
+
     room.delete()
 
     return HttpResponse("")
