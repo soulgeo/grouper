@@ -1,0 +1,11 @@
+{% if messages %}
+    <div class="toast toast-top toast-end z-[1000] mt-16">
+        {% for message in messages %}
+            <div role="alert"
+                 class="text-sm alert alert-{{ message.tags }} shadow-lg max-w-md">
+                <span class="flex-1">{{ message }}</span>
+                <button onclick="this.closest('.alert').remove()" class="btn btn-xs btn-circle btn-ghost">✕</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

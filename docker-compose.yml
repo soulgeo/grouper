@@ -1,6 +1,7 @@
 services:
   web:
     build: .
+    image: grouper-local
     container_name: grouper_app
     ports:
       - 8000:8000
@@ -10,18 +11,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
-        restart: true
     environment:
       - DB_HOST=db
     env_file:
       - .env
   tailwind:
-    build: .
+    image: grouper-local
     command: npm run tailwind-watch
     tty: true
     volumes:
       - .:/app
       - /app/node_modules
+    depends_on:
+      - web
   db:
     image: postgres:17
     ports:

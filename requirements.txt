@@ -1,5 +1,7 @@
 django
 django-allauth
+django-allauth-ui
+slippers
 python-dotenv
 django-stubs
 django-stubs-ext

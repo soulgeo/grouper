@@ -55,8 +55,10 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django_countries',
     'widget_tweaks',
+    'slippers',
     'template_partials',
     'users',
+    'allauth_ui',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -234,3 +236,5 @@ ASGI_APPLICATION = 'grouper.asgi.application'
 CHANNEL_LAYERS = {
     'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}
 }
+
+ALLAUTH_UI_THEME = "dark"
