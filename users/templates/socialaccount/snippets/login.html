@@ -1,0 +1,20 @@
+{% load socialaccount %}
+{% load static %}
+{% get_providers as socialaccount_providers %}
+
+{% if socialaccount_providers %}
+    <div class="divider">OR</div>
+    <div class="flex flex-col gap-2">
+        {% for provider in socialaccount_providers %}
+            <a title="{{ provider.name }}" class="btn btn-outline w-full gap-2 capitalize" 
+               href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+                {% if provider.id == 'google' %}
+                    <img src="{% static 'src/img/google.svg' %}" alt="Google" class="w-5 h-5">
+                {% elif provider.id == 'facebook' %}
+                     <img src="{% static 'src/img/facebook.svg' %}" alt="Facebook" class="w-5 h-5">
+                {% endif %}
+                Continue with {{ provider.name }}
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
