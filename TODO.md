@@ -13,8 +13,8 @@
 - [x] Group Chats
 - [x] Chat popup windows
 - [x] Notification red dot indicator
-- [ ] Chat Tab Persistence
-- [ ] Form Messages
+- [x] Chat Tab Persistence
+- [x] Form Messages
 
 - [ ] Display users who liked a post when clicking on number of likes
 - [ ] Dynamically load posts on scroll with HTMX

@@ -10,9 +10,7 @@ Results for: {{ query }}
     <div class="font-bold text-lg">
         <h3>Filters</h3>
     </div>
-    <form method="GET" action="{% url 'search' %}">
-    {% include "includes/filters.html" %}
-    </form>
+    {% include "includes/filters.html"%}
 </div>
 {% endblock sidebar %}
 
@@ -21,9 +19,7 @@ Results for: {{ query }}
 <p>No results.</p>
 {% else %}
 <div class="flex flex-col">
-    {% for post in results %}
-    {% include "includes/post.html" %}
-    {% endfor %}
+    {% include "includes/posts_container.html" with posts=results include_filters=True %}
 </div>
 {% endif %}
 {% endblock main %}

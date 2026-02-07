@@ -83,10 +83,8 @@
         {% if user == profile.user%}
         {% include "includes/post_form.html" %}
         {% endif %}
-        <div class="flex-col" id="posts-body">
-            {% for post in posts %}
-            {% include "includes/post.html" %}
-            {% endfor %}
+        <div class="flex-col" id="posts_body">
+            {% include "includes/posts_container.html" with include_profile=True %}
         </div>
     </div>
 </div>

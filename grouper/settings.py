@@ -238,3 +238,6 @@ CHANNEL_LAYERS = {
 }
 
 ALLAUTH_UI_THEME = "dark"
+
+# Default paginator page size
+PAGE_SIZE = 12

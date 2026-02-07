@@ -1,0 +1,13 @@
+{% for post in posts %}
+{% if forloop.last and posts.has_next %}
+<div hx-get="{% url 'get_posts' %}?page={{ posts.next_page_number }}"
+    hx-trigger="revealed"
+    {% if include_filters %} hx-include="#filters_form" {% endif %}
+    {% if include_profile and profile %} hx-vals='{"profile_id": "{{ profile.id }}"}' {% endif %}
+    hx-swap="afterend">
+    {% include "includes/post.html" %}
+</div>
+{% else %}
+{% include "includes/post.html" %}
+{% endif %}
+{% endfor %}

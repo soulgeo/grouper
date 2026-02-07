@@ -14,10 +14,8 @@ Home
     {% else %}
     <p>Sign in to create posts.</p>
     {% endif %}
-    <div class="flex-col" id="posts-body">
-        {% for post in posts %}
-        {% include "includes/post.html" %}
-        {% endfor %}
+    <div class="flex-col" id="posts_body">
+        {% include "includes/posts_container.html" %}
     </div>
 </div>
 {% endblock main %}

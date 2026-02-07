@@ -1,5 +1,15 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.db.models import BooleanField, Exists, OuterRef, Q, QuerySet, Subquery, Value
+from django.core.paginator import Paginator
+from django.db.models import (
+    BooleanField,
+    Exists,
+    OuterRef,
+    Q,
+    QuerySet,
+    Subquery,
+    Value,
+)
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -12,7 +22,14 @@ from .forms import (
     PostForm,
     UserProfileSearchForm,
 )
-from .models import Contact, FriendRequest, InterestCategory, Like, Post, PostContent
+from .models import (
+    Contact,
+    FriendRequest,
+    InterestCategory,
+    Like,
+    Post,
+    PostContent,
+)
 
 
 def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
@@ -26,7 +43,12 @@ def filter_visible_posts(request, query_set: QuerySet) -> QuerySet:
 
 
 def index(request):
-    posts = filter_visible_posts(request, Post.objects.order_by('-created_at'))
+    paginator = Paginator(
+        filter_visible_posts(request, Post.objects.order_by('-created_at')),
+        settings.PAGE_SIZE,
+    )
+    posts = paginator.page(1)
+
     interest_categories = InterestCategory.objects.prefetch_related(
         'interests'
     ).all()
@@ -37,8 +59,61 @@ def index(request):
         'posts': posts,
         'interest_categories': interest_categories,
     }
-    template = 'index.html'
-    return render(request, template, context)
+    return render(request, 'index.html', context)
+
+
+def filter_post_results(results, request) -> QuerySet:
+    in_contacts = request.GET.get('in_contacts')
+    matching_interests = request.GET.get('matching_interests')
+    country = request.GET.get('country')
+    interests = request.GET.getlist('interests')
+
+    if country:
+        results = results.filter(user__profile__country=country)
+
+    if interests:
+        results = results.filter(interests__in=interests).distinct()
+
+    user = request.user
+    if user.is_authenticated:
+        if in_contacts:
+            results = results.filter(user__in_contacts_of__user=user)
+
+        if matching_interests:
+            results = results.filter(
+                interests__in=user.profile.interests.all()
+            ).distinct()
+
+    return results
+
+
+def get_posts(request):
+    page = request.GET.get('page', 1)
+
+    profile_id = request.GET.get('profile_id')
+    query = request.GET.get('query')
+
+    profile = None
+    if profile_id:
+        profile = get_object_or_404(UserProfile, id=profile_id)
+        qs = Post.objects.filter(user=profile.user)
+    elif query:
+        qs = Post.objects.filter(title__unaccent__icontains=query)
+    else:
+        qs = Post.objects.all()
+
+    qs = filter_visible_posts(request, qs).order_by('-created_at')
+    qs = filter_post_results(qs, request)
+
+    paginator = Paginator(qs, settings.PAGE_SIZE)
+    posts = paginator.page(page)
+
+    context = {
+        'posts': posts,
+        'profile': profile,
+        'include_profile': bool(profile_id),
+    }
+    return render(request, 'includes/posts_container.html', context)
 
 
 def search_users(request):
@@ -136,10 +211,16 @@ def profile(request, username):
 
     profile = get_object_or_404(qs, user__username=username)
 
-    posts = filter_visible_posts(
-        request,
-        Post.objects.filter(user__username=username).order_by('-created_at'),
+    paginator = Paginator(
+        filter_visible_posts(
+            request,
+            Post.objects.filter(user__username=username).order_by(
+                '-created_at'
+            ),
+        ),
+        settings.PAGE_SIZE,
     )
+    posts = paginator.page(1)
 
     interest_categories = InterestCategory.objects.prefetch_related(
         'interests'
@@ -317,40 +398,27 @@ def accept_friend_request(request, id):
 
 def search_posts(request):
     query = request.GET.get('query')
-
-    in_contacts = request.GET.get('in_contacts')
-    matching_interests = request.GET.get('matching_interests')
-    country = request.GET.get('country')
-    interests = request.GET.getlist('interests')
-
     results = filter_visible_posts(
         request,
         Post.objects.filter(title__unaccent__icontains=query).order_by(
             '-created_at'
         ),
     )
+    results = filter_post_results(results, request)
 
-    if country:
-        results = results.filter(user__profile__country=country)
-
-    if interests:
-        results = results.filter(interests__in=interests).distinct()
-
-    user = request.user
-    if user.is_authenticated:
-        if in_contacts:
-            results = results.filter(user__in_contacts_of__user=user)
-
-        if matching_interests:
-            results = results.filter(
-                interests__in=user.profile.interests.all()
-            ).distinct()
+    paginator = Paginator(results, settings.PAGE_SIZE)
+    results_page = paginator.page(1)
 
     user_profile_search_form = UserProfileSearchForm(request.GET)
 
     interest_categories = InterestCategory.objects.prefetch_related(
         'interests'
     ).all()
+
+    in_contacts = request.GET.get('in_contacts')
+    matching_interests = request.GET.get('matching_interests')
+    country = request.GET.get('country')
+    interests = request.GET.getlist('interests')
 
     try:
         selected_interests = [int(i) for i in interests]
@@ -363,7 +431,7 @@ def search_posts(request):
         'matching_interests': matching_interests,
         'country': country,
         'selected_interests': selected_interests,
-        'results': results,
+        'results': results_page,
         'user_profile_search_form': user_profile_search_form,
         'interest_categories': interest_categories,
     }
@@ -401,7 +469,7 @@ def get_create_post(request):
         'modal_id': 'post_modal',
         'hide_trigger': True,
         'auto_open': True,
-        'hx_target': '#posts-body',
+        'hx_target': '#posts_body',
         'hx_swap': 'afterbegin',
     }
     return render(request, 'includes/post_form.html', context)
@@ -411,7 +479,7 @@ def get_delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if post.user != request.user:
         return HttpResponse("Unauthorized", status=403)
-    
+
     return render(request, 'includes/delete_post_modal.html', {'post': post})
 
 
