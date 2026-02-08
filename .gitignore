@@ -4,9 +4,10 @@
 *.pyc
 __pycache__
 db.sqlite3
-media/*
-!media/.gitkeep
-staticfiles/
+src/media/*
+!src/media/.gitkeep
+src/staticfiles/
+/staticfiles/
 
 # Backup files # 
 *.bak 
@@ -139,6 +140,6 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 node_modules/
-/static/css/output.css
-/static/src/htmx.min.js
-/static/src/ws.js
+src/static/css/output.css
+src/static/src/htmx.min.js
+src/static/src/ws.js

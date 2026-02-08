@@ -15,9 +15,7 @@
 - [x] Notification red dot indicator
 - [x] Chat Tab Persistence
 - [x] Form Messages
-
-- [ ] Display users who liked a post when clicking on number of likes
-- [ ] Dynamically load posts on scroll with HTMX
+- [x] Dynamically load posts on scroll with HTMX
 
 
 ### Chat Fix

@@ -4,10 +4,10 @@ echo "Restoring HTMX..."
 npm run copy-htmx
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput --clear
+python src/manage.py collectstatic --noinput --clear
 
 echo "Running migrations..."
-python manage.py migrate
+python src/manage.py migrate
 
 echo "Starting server..."
-python manage.py runserver 0.0.0.0:8000
+python src/manage.py runserver 0.0.0.0:8000

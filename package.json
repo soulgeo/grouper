@@ -12,10 +12,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copy-htmx": "cp node_modules/htmx.org/dist/htmx.min.js static/src/htmx.min.js && cp node_modules/htmx-ext-ws/dist/ws.js static/src/ws.js",
+    "copy-htmx": "cp node_modules/htmx.org/dist/htmx.min.js src/static/src/htmx.min.js && cp node_modules/htmx-ext-ws/dist/ws.js src/static/src/ws.js",
     "build": "npm run copy-htmx && npm run tailwind-build",
-    "tailwind-watch": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch",
-    "tailwind-build": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify"
+    "tailwind-watch": "tailwindcss -i ./src/static/src/input.css -o ./src/static/css/output.css --watch",
+    "tailwind-build": "tailwindcss -i ./src/static/src/input.css -o ./src/static/css/output.css --minify"
   },
   "repository": {
     "type": "git",
