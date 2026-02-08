@@ -1,0 +1,28 @@
+[project]
+name = "grouper"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "channels[daphne]>=4.3.2",
+    "django>=6.0.2",
+    "django-allauth>=65.14.1",
+    "django-allauth-ui>=1.8.1",
+    "django-countries>=8.2.0",
+    "django-nested-admin>=4.1.6",
+    "django-stubs>=5.2.9",
+    "django-stubs-ext>=5.2.9",
+    "django-template-partials>=25.3",
+    "django-widget-tweaks>=1.5.1",
+    "mypy-extensions>=1.1.0",
+    "pillow>=12.1.0",
+    "psycopg[binary]>=3.3.2",
+    "pyjwt>=2.11.0",
+    "python-dotenv>=1.2.1",
+    "requests>=2.32.5",
+    "slippers>=0.6.2",
+    "types-channels>=4.3.0.20250822",
+    "typing-extensions>=4.15.0",
+    "whitenoise>=6.11.0",
+]

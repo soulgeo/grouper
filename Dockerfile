@@ -7,13 +7,18 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     nodejs \
-    npm
+    npm 
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY pyproject.toml uv.lock ./
+ENV UV_PROJECT_ENVIRONMENT="/opt/venv"
+RUN uv sync --frozen --no-install-project 
 
 COPY src/ .
-RUN npm install
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN npm install 
 RUN npm run build
 
 EXPOSE 8000
