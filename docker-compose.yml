@@ -6,7 +6,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - .:/app
+      - ./src:/app
       - /app/node_modules
     depends_on:
       db:
@@ -20,7 +20,7 @@ services:
     command: npm run tailwind-watch
     tty: true
     volumes:
-      - .:/app
+      - ./src:/app
       - /app/node_modules
     depends_on:
       - web

@@ -12,11 +12,8 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-COPY package.json package-lock.json ./
+COPY src/ .
 RUN npm install
-
-COPY . .
-
 RUN npm run build
 
 EXPOSE 8000
