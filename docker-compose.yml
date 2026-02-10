@@ -11,8 +11,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       - DB_HOST=db
+      - REDIS_HOST=redis
     env_file:
       - .env
   tailwind:
@@ -41,6 +44,15 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+  redis:
+    image: redis:8.4-bookworm
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
 
 volumes:
   postgres_db:
+  redis_data:

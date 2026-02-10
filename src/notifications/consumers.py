@@ -27,7 +27,7 @@ class NotificationConsumer(WebsocketConsumer):
         return super().disconnect(code)
 
     def post_liked(self, event):
-        notification = event['notification']
+        notification = Notification.objects.get(id=event['notification'])
 
         context = {'notification': notification}
         csrf_token = self.scope.get('cookies', {}).get('csrftoken')

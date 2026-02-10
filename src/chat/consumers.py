@@ -43,12 +43,12 @@ class ChatConsumer(WebsocketConsumer):
 
         async_to_sync(self.channel_layer.group_send)(
             f"chat_{self.room_id}",
-            {"type": "chat.message", "message": message},
+            {"type": "chat.message", "message_id": message.id},
         )
 
 
     def chat_message(self, event):
-        message = event['message']
+        message = ChatMessage.objects.get(id=event['message_id'])
         
         self.chatroom.latest_message = message  # type: ignore
 

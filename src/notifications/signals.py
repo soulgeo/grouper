@@ -25,25 +25,30 @@ def send_notification_on_post_like(sender, instance, created, **kwargs):
     notification.save()
 
     group_name = instance.post.user.username
-    async_to_sync(channel_layer.group_send)(group_name, {
-        'type': 'post_liked',
-        'notification': notification,
-    })
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            'type': 'post_liked',
+            'notification': notification.id,  # type: ignore
+        },
+    )
+
 
 @receiver(post_save, sender=ChatMessage)
 def update_chat_list_on_new_message(sender, instance, created, **kwargs):
     if not created:
         return
-    
+
     channel_layer = get_channel_layer()
     if not channel_layer:
         return
 
     for user in instance.room.users.all():
         async_to_sync(channel_layer.group_send)(
-            user.username, {
+            user.username,
+            {
                 "type": "chat.list_update",
                 "room_id": instance.room.id,
                 "author_username": instance.author.username,
-            }
+            },
         )

@@ -32,7 +32,10 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+]
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -234,7 +237,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 ASGI_APPLICATION = 'grouper.asgi.application'
 
 CHANNEL_LAYERS = {
-    'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}
+    'default': {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                f"redis://:{os.environ.get('REDIS_PASSWORD', 'yourpassword')}@{os.environ.get('REDIS_HOST', 'redis')}:6379/0"
+            ],
+        },
+    }
 }
 
 ALLAUTH_UI_THEME = "dark"
