@@ -29,7 +29,7 @@ def send_notification_on_post_like(sender, instance, created, **kwargs):
         group_name,
         {
             'type': 'post_liked',
-            'notification': notification.id,  # type: ignore
+            'notification': notification.pk,
         },
     )
 

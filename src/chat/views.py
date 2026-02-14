@@ -89,7 +89,7 @@ def chat_contact(request, user_id):
         )
         room.users.set([user, contact_user])
 
-    return redirect('chatroom', room_id=room.id)  # type: ignore
+    return redirect('chatroom', room_id=room.pk)
 
 
 def create_chat_room(request):
