@@ -19,12 +19,13 @@ services:
     env_file:
       - .env
   tailwind:
-    image: grouper-local
-    command: npm run tailwind-watch
+    image: node:22-bookworm-slim
+    working_dir: /app
+    command: sh -c "npm install && npm run tailwind-watch"
     tty: true
+    stdin_open: true
     volumes:
       - ./src:/app
-      - /app/node_modules
     depends_on:
       - web
   db:

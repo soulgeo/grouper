@@ -10,7 +10,8 @@ from notifications.models import Notification
 class NotificationConsumer(WebsocketConsumer):
     def connect(self):
         self.user = self.scope['user']  # type: ignore
-        if not self.user:
+        if not self.user or not self.user.is_authenticated:
+            self.close()
             return
 
         self.group_name = self.user.username
@@ -21,9 +22,10 @@ class NotificationConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, code: int) -> None:
-        async_to_sync(self.channel_layer.group_discard)(
-            self.group_name, self.channel_name
-        )
+        if hasattr(self, 'group_name'):
+            async_to_sync(self.channel_layer.group_discard)(
+                self.group_name, self.channel_name
+            )
         return super().disconnect(code)
 
     def post_liked(self, event):
