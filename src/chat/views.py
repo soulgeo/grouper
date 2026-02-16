@@ -1,12 +1,14 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from chat.forms import ChatForm
 from chat.models import ChatRoom
 from users.models import User, UserProfile
 
 
+@login_required
 def chat_room(request, room_id):
     user = request.user
     room = ChatRoom.objects.with_rich_data(user).get(id=room_id)  # type: ignore
@@ -25,6 +27,7 @@ def chat_room(request, room_id):
     return response
 
 
+@login_required
 def contact_chat_room(request, user_id):
     user = request.user
     contact = User.objects.get(id=user_id)
@@ -38,6 +41,7 @@ def contact_chat_room(request, user_id):
     return render(request, 'includes/chat_popup.html', context)
 
 
+@login_required
 def chat_home(request):
     user = request.user
     rooms = ChatRoom.objects.filter(users=user).distinct().with_rich_data(user)  # type: ignore
@@ -71,6 +75,7 @@ def chat_home(request):
     return render(request, 'chat.html', context)
 
 
+@login_required
 def chat_contact(request, user_id):
     user = request.user
     contact_user = User.objects.get(id=user_id)
@@ -92,6 +97,7 @@ def chat_contact(request, user_id):
     return redirect('chatroom', room_id=room.pk)
 
 
+@login_required
 def create_chat_room(request):
     if request.method != 'POST':
         return redirect('/accounts/')
@@ -137,6 +143,7 @@ def create_chat_room(request):
     return response
 
 
+@login_required
 def get_create_chat_room(request):
     friend_profiles = UserProfile.objects.filter(
         user__in_contacts_of__user=request.user
@@ -154,6 +161,7 @@ def get_create_chat_room(request):
     return render(request, 'includes/chat_form.html', context)
 
 
+@login_required
 def edit_chat_room(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id)
 
@@ -218,6 +226,7 @@ def edit_chat_room(request, room_id):
     return response
 
 
+@login_required
 def get_delete_chat_room(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id)
     if not room.users.filter(id=request.user.id).exists():
@@ -226,6 +235,7 @@ def get_delete_chat_room(request, room_id):
     return render(request, 'includes/delete_chat_modal.html', {'room': room})
 
 
+@login_required
 def delete_chat_room(request, room_id):
     if request.method != 'POST':
         return redirect('/')  # TODO: Change Redirect
@@ -240,6 +250,7 @@ def delete_chat_room(request, room_id):
     return HttpResponse("")
 
 
+@login_required
 def get_user_chat_rooms(request):
     user = request.user
     rooms = ChatRoom.objects.filter(users=user).distinct().with_rich_data(user)  # type: ignore

@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from core.signals import contact_created
 from users.forms import UserForm, UserProfileForm
 from users.models import User, UserProfile
 
@@ -366,6 +367,7 @@ def send_friend_request(request, username):
     return render(request, partial, context)
 
 
+@login_required
 def accept_friend_request(request, id):
     if not request.method == 'POST':
         return redirect('/')
@@ -385,6 +387,8 @@ def accept_friend_request(request, id):
     sender_contact.save()
     receiver_contact.save()
     friend_request.save()
+
+    contact_created.send(sender=Contact, instance=receiver_contact)
 
     profile = UserProfile.objects.annotate(
         is_contact=Value(True, output_field=BooleanField()),
