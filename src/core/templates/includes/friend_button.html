@@ -21,7 +21,7 @@
         hx-target="#friend-button-{{ profile.user.id }}" hx-swap="outerHTML">
         {% csrf_token %}
         <button type="submit" class="btn btn-primary">Accept</button>
-    </form> ff
+    </form>
     {% elif profile.request_sent %}
     <div class="btn btn-ghost">Request Sent</div>
     {% else %}
