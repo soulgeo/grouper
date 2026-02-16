@@ -1,0 +1,20 @@
+<div id="global_modal_container" hx-swap-oob="innerHTML">
+    <dialog id="login_prompt_modal" class="modal">
+        <div class="modal-box max-w-sm">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 focus:outline-none">✕</button>
+            </form>
+            <h3 class="font-bold text-lg mb-4 text-center">Authentication Required</h3>
+            <p class="py-4 text-center text-base-content/80">{{ message|default:"Please sign in to continue." }}</p>
+            <div class="modal-action justify-center mt-2">
+                <a href="{% url 'account_login' %}" class="btn btn-primary w-full">Sign In</a>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+    <script>
+        document.getElementById("login_prompt_modal").showModal();
+    </script>
+</div>

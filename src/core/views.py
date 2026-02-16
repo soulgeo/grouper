@@ -443,12 +443,19 @@ def search_posts(request):
     return render(request, template, context)
 
 
-@login_required
 def like_post(request, post_id):
     if not request.method == 'POST':
         return redirect('/accounts/')
 
-    post = Post.objects.get(id=post_id)
+    if not request.user.is_authenticated:
+        context = {
+            'message': 'Sign in to like this post.'
+        }
+        response = render(request, 'includes/login_prompt.html', context)
+        response['HX-Reswap'] = 'none'
+        return response
+
+    post = get_object_or_404(Post, id=post_id)
 
     like = Like.objects.filter(post=post, user=request.user).first()
     if like:
