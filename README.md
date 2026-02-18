@@ -1,6 +1,6 @@
 # Grouper
 
-A full-stack social media clone web application, built with Django and HTMX for the purposes of the Software as a Service class assignment at the University of Piraeus. Functionalities include: user authentication and authorization, creating posts and liking other users' posts, searching and filtering through users and posts and chatting with other users through real-time web socket powered chat.\
+A full-stack social media clone web application, built with Django and HTMX for the purposes of the Software as a Service class assignment at the University of Piraeus. Functionalities include: user authentication and authorization, creating posts and liking other users' posts, searching and filtering through users and posts and chatting with other users through real-time chat powered by web sockets.\
 \
 The application is dockerized and deployed to the cloud using fly.io, and can be accessed at https://grouper.fly.dev/
 
