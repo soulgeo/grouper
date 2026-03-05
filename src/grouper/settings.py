@@ -249,3 +249,6 @@ ALLAUTH_UI_THEME = "dark"
 
 # Default paginator page size
 PAGE_SIZE = 12
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
